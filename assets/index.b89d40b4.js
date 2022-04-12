@@ -1,6 +1,6 @@
 var n=`# Milkdown
 
-![greeting bear](https://preview.redd.it/us7w1x2zx8461.jpg?auto=webp&s=077a73d5c08aec0bc0fb48c5e5be40c928467bb6)
+![greeting bear](/polar.jpeg)
 
 > Milkdown is a WYSIWYG markdown editor framework.
 >
@@ -71,13 +71,11 @@ Use [emoji cheat sheet](https://www.webfx.com/tools/emoji-cheat-sheet/) such as 
 
 You may notice the emoji filter while inputting values, try to type \`:baby\` to see the list.
 
-You can also type \`:emoji:\` to toggle the emoji picker.
-
 ---
 
 Diagrams is powered by [mermaid](https://mermaid-js.github.io/mermaid/#/).
 
-You can type _\\\`\\\`\\\`mermaid_ to add diagrams.
+You can type \` \`\`\`mermaid \` to add diagrams.
 
 \`\`\`mermaid
 graph TD;
