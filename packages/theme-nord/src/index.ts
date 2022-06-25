@@ -6,6 +6,7 @@ import {
     ThemeColor,
     themeFactory,
     ThemeFont,
+    ThemeGlobal,
     ThemeIcon,
     ThemeManager,
     ThemeScrollbar,
@@ -87,7 +88,7 @@ export const createTheme = (isDarkMode: boolean) => (emotion: Emotion, manager: 
     });
 
     manager.set(ThemeShadow, () => {
-        const { lineWidth } = size;
+        const lineWidth = manager.get(ThemeSize, 'lineWidth');
         const getShadow = (opacity: number) => manager.get(ThemeColor, ['shadow', opacity]);
         return css`
             box-shadow: 0 ${lineWidth} ${lineWidth} ${getShadow(0.14)}, 0 2px ${lineWidth} ${getShadow(0.12)},
@@ -96,14 +97,15 @@ export const createTheme = (isDarkMode: boolean) => (emotion: Emotion, manager: 
     });
 
     manager.set(ThemeBorder, (direction) => {
+        const lineWidth = manager.get(ThemeSize, 'lineWidth');
         const line = manager.get(ThemeColor, ['line']);
         if (!direction) {
             return css`
-                border: ${size.lineWidth} solid ${line};
+                border: ${lineWidth} solid ${line};
             `;
         }
         return css`
-            ${`border-${direction}`}: ${size.lineWidth} solid ${line};
+            ${`border-${direction}`}: ${lineWidth} solid ${line};
         `;
     });
 
@@ -113,7 +115,9 @@ export const createTheme = (isDarkMode: boolean) => (emotion: Emotion, manager: 
         return getIcon(icon);
     });
 
-    getStyle(manager, emotion);
+    manager.set(ThemeGlobal, () => {
+        getStyle(manager, emotion);
+    });
 
     useAllPresetRenderer(manager, emotion);
 };
@@ -124,8 +128,10 @@ export const getNord = (isDarkMode = false) =>
 export const nordDark = getNord(true);
 export const nordLight = getNord(false);
 
-const darkMode = Boolean(window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+let darkMode = false;
+if (typeof window !== 'undefined') {
+    darkMode = Boolean(window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+}
 export const nord = getNord(darkMode);
 
 export { color, darkColor, lightColor } from './nord';
-export { view } from './view';

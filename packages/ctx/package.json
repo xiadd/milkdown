@@ -1,6 +1,6 @@
 {
     "name": "@milkdown/ctx",
-    "version": "6.0.0-next.0",
+    "version": "6.2.0",
     "type": "module",
     "main": "./lib/index.es.js",
     "types": "./lib/index.d.ts",
@@ -9,8 +9,8 @@
     "scripts": {
         "start": "concurrently -n es,dts \"vite build --watch\"  \"tsc --emitDeclarationOnly --watch\"",
         "test": "vitest",
-        "tsc": "tsc --noEmit",
-        "build": "vite build && tsc --emitDeclarationOnly"
+        "tsc": "tsc --noEmit && echo",
+        "build": "tsc --emitDeclarationOnly && vite build"
     },
     "files": [
         "lib",
@@ -25,13 +25,8 @@
         "text editor",
         "markdown editor"
     ],
-    "devDependencies": {
-        "@milkdown/exception": "workspace:*"
-    },
-    "peerDependencies": {
-        "@milkdown/exception": "6.0.0-next.0"
-    },
     "dependencies": {
+        "@milkdown/exception": "workspace:*",
         "tslib": "^2.3.1"
     },
     "nx": {

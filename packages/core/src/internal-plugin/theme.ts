@@ -7,11 +7,12 @@ import {
     emotionCtx,
     initEmotion,
     internalThemeKeys,
+    ThemeGlobal,
     ThemeManager,
     themeManagerCtx,
     ThemeSliceKey,
 } from '@milkdown/design-system';
-import { Plugin, PluginKey } from '@milkdown/prose';
+import { Plugin, PluginKey } from '@milkdown/prose/state';
 
 import { ConfigReady } from './config';
 import { InitReady, prosePluginsCtx } from './init';
@@ -49,28 +50,50 @@ export const themeEnvironment: MilkdownPlugin = (pre) => {
             xs.concat(
                 new Plugin({
                     key,
-                    view: () => ({
-                        destroy: () => {
-                            emotion.flush();
-                        },
-                    }),
+                    view: () => {
+                        themeManager.runExecutor();
+                        return {
+                            destroy: () => {
+                                emotion.flush();
+                            },
+                        };
+                    },
                 }),
             ),
         );
     };
 };
 
-export const themeFactory =
-    (createThemePack: (emotion: Emotion, manager: ThemeManager) => void): MilkdownPlugin =>
-    () => {
-        return async (ctx) => {
-            await ctx.wait(ThemeEnvironmentReady);
-            const emotion = ctx.get(emotionCtx);
-            const themeManager = ctx.get(themeManagerCtx);
+export type CreateThemePack = (emotion: Emotion, manager: ThemeManager) => void;
+export type ThemePlugin = MilkdownPlugin & {
+    override: (overrideFn: CreateThemePack) => ThemePlugin;
+};
 
-            createThemePack(emotion, themeManager);
-            ctx.done(ThemeReady);
-        };
+export const themeFactory = (createThemePack?: CreateThemePack): ThemePlugin => {
+    let overrideFn: CreateThemePack | null = null;
+    const theme: ThemePlugin = () => async (ctx) => {
+        await ctx.wait(ThemeEnvironmentReady);
+        const emotion = ctx.get(emotionCtx);
+        const themeManager = ctx.get(themeManagerCtx);
+
+        themeManager.setExecutor(() => {
+            createThemePack?.(emotion, themeManager);
+            overrideFn?.(emotion, themeManager);
+
+            internalThemeKeys.forEach((key) => {
+                if (!themeManager.has(key as ThemeSliceKey)) {
+                    console.warn('Theme key not found: ', key.sliceName);
+                }
+            });
+
+            themeManager.get(ThemeGlobal, undefined);
+        });
+
+        ctx.done(ThemeReady);
     };
-
-export * from '@milkdown/design-system';
+    theme.override = (fn) => {
+        overrideFn = fn;
+        return theme;
+    };
+    return theme;
+};

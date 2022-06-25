@@ -1,20 +1,23 @@
 /* Copyright 2021, Milkdown by Mirone. */
 
-import { commandsCtx, createCmd, createCmdKey, ThemeInputChipType } from '@milkdown/core';
-import { EditorView, findSelectedNodeOfType, InputRule, NodeSelection, Plugin, PluginKey } from '@milkdown/prose';
+import { commandsCtx, createCmd, createCmdKey, editorViewCtx, ThemeInputChipType } from '@milkdown/core';
+import { findSelectedNodeOfType } from '@milkdown/prose';
+import { InputRule } from '@milkdown/prose/inputrules';
+import { NodeSelection, Plugin, PluginKey } from '@milkdown/prose/state';
+import { EditorView } from '@milkdown/prose/view';
 import { createNode } from '@milkdown/utils';
 
 import { getFootnoteDefId, getFootnoteRefId } from './utils';
 
 export const ModifyFootnoteRef = createCmdKey<string>('ModifyFootnoteRef');
-const key = new PluginKey('MILKDOWN_PLUGIN_FOOTNOTE_REF_INPUT');
+const key = new PluginKey('MILKDOWN_FOOTNOTE_REF_INPUT');
 
 export const footnoteReference = createNode((utils) => {
     const id = 'footnote_reference';
 
     return {
         id,
-        schema: () => ({
+        schema: (ctx) => ({
             group: 'inline',
             inline: true,
             atom: true,
@@ -38,6 +41,22 @@ export const footnoteReference = createNode((utils) => {
             ],
             toDOM: (node) => {
                 const label = node.attrs['label'];
+                const a = document.createElement('a');
+                const href = `#${getFootnoteDefId(label)}`;
+                a.href = href;
+                a.textContent = `[${label}]`;
+                a.onclick = (e) => {
+                    const view = ctx.get(editorViewCtx);
+                    if (view.editable) {
+                        e.preventDefault();
+                    }
+                };
+                a.ondblclick = () => {
+                    const view = ctx.get(editorViewCtx);
+                    if (view.editable) {
+                        window.location.href = href;
+                    }
+                };
                 return [
                     'sup',
                     {
@@ -45,7 +64,7 @@ export const footnoteReference = createNode((utils) => {
                         'data-type': id,
                         id: getFootnoteRefId(label),
                     },
-                    ['a', { href: `#${getFootnoteDefId(label)}` }, `[${label}]`],
+                    a,
                 ];
             },
             parseMarkdown: {
@@ -98,15 +117,16 @@ export const footnoteReference = createNode((utils) => {
         ],
         prosePlugins: (type, ctx) => {
             const inputChipRenderer = utils.themeManager.get<ThemeInputChipType>('input-chip', {
+                width: '12em',
                 placeholder: 'Input Footnote Label',
                 onUpdate: (value) => {
                     ctx.get(commandsCtx).call(ModifyFootnoteRef, value);
                 },
                 isBindMode: true,
             });
-            const shouldDisplay = (view: EditorView) => {
-                return Boolean(type && findSelectedNodeOfType(view.state.selection, type));
-            };
+            if (!inputChipRenderer) return [];
+            const shouldDisplay = (view: EditorView) =>
+                Boolean(type && findSelectedNodeOfType(view.state.selection, type));
             const getCurrentLabel = (view: EditorView) => {
                 const result = findSelectedNodeOfType(view.state.selection, type);
                 if (!result) return;

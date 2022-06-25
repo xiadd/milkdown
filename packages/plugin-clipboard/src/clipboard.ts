@@ -1,6 +1,7 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { editorViewOptionsCtx, parserCtx, schemaCtx, serializerCtx } from '@milkdown/core';
-import { Node, Plugin, PluginKey, Slice } from '@milkdown/prose';
+import { DOMParser, Node, Slice } from '@milkdown/prose/model';
+import { Plugin, PluginKey } from '@milkdown/prose/state';
 import { createPlugin } from '@milkdown/utils';
 
 type R = Record<string, unknown>;
@@ -19,7 +20,7 @@ const isPureText = (content: R | R[] | undefined | null): boolean => {
     return content['type'] === 'text';
 };
 
-export const key = new PluginKey('MILKDOWN_PLUGIN_CLIPBOARD');
+export const key = new PluginKey('MILKDOWN_CLIPBOARD');
 
 export const clipboardPlugin = createPlugin(() => {
     return {
@@ -35,8 +36,9 @@ export const clipboardPlugin = createPlugin(() => {
             const plugin = new Plugin({
                 key,
                 props: {
-                    handlePaste: (view, event) => {
+                    handlePaste: (view, event, originalSlice) => {
                         const parser = ctx.get(parserCtx);
+                        const serializer = ctx.get(serializerCtx);
                         const editable = view.props.editable?.(view.state);
                         const { clipboardData } = event;
                         if (!editable || !clipboardData) {
@@ -48,19 +50,25 @@ export const clipboardPlugin = createPlugin(() => {
                             return false;
                         }
 
-                        const text = clipboardData.getData('text/plain');
+                        let text = clipboardData.getData('text/plain');
                         const html = clipboardData.getData('text/html');
-                        if (html.length > 0 || text.length === 0) {
+                        if (html.length === 0 && text.length === 0) {
                             return false;
+                        }
+                        if (html.length > 0 || text.length === 0) {
+                            const dom = document.createElement('template');
+                            dom.innerHTML = html;
+                            const node = DOMParser.fromSchema(schema).parse(dom.content);
+                            dom.remove();
+                            text = serializer(node);
                         }
 
                         const slice = parser(text);
                         if (!slice || typeof slice === 'string') return false;
 
-                        const contentSlice = view.state.selection.content();
                         view.dispatch(
                             view.state.tr.replaceSelection(
-                                new Slice(slice.content, contentSlice.openStart, contentSlice.openEnd),
+                                new Slice(slice.content, originalSlice.openStart, originalSlice.openEnd),
                             ),
                         );
 

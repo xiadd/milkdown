@@ -1,19 +1,12 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { Emotion, getPalette, ThemeFont, ThemeInnerEditorType, ThemeManager, ThemeSize } from '@milkdown/core';
-import {
-    baseKeymap,
-    chainCommands,
-    deleteSelection,
-    EditorState,
-    EditorView,
-    history,
-    keymap,
-    Node,
-    redo,
-    StepMap,
-    TextSelection,
-    undo,
-} from '@milkdown/prose';
+import { baseKeymap, chainCommands, deleteSelection } from '@milkdown/prose/commands';
+import { history, redo, undo } from '@milkdown/prose/history';
+import { keymap } from '@milkdown/prose/keymap';
+import { Node } from '@milkdown/prose/model';
+import { EditorState, TextSelection } from '@milkdown/prose/state';
+import { StepMap } from '@milkdown/prose/transform';
+import { EditorView } from '@milkdown/prose/view';
 
 const getStyle = (manager: ThemeManager, { css }: Emotion) => {
     const palette = getPalette(manager);
@@ -71,7 +64,8 @@ const createInnerEditor = (outerView: EditorView, getPos: () => number) => {
                                 return false;
                             }
                             const { dispatch, state: outerState } = outerView;
-                            const p = outerState.schema.nodes['paragraph'].create();
+                            const p = outerState.schema.nodes['paragraph']?.create();
+                            if (!p) return false;
                             const tr = outerState.tr.replaceSelectionWith(p);
                             let start = tr.selection.from - 2;
                             if (start < 0) {
@@ -85,7 +79,9 @@ const createInnerEditor = (outerView: EditorView, getPos: () => number) => {
                             if (dispatch) {
                                 const { state } = outerView;
                                 const { to } = state.selection;
-                                const tr = state.tr.replaceWith(to, to, state.schema.nodes.paragraph.createAndFill());
+                                const p = state.schema.nodes['paragraph']?.createAndFill();
+                                if (!p) return false;
+                                const tr = state.tr.replaceWith(to, to, p);
                                 outerView.dispatch(tr.setSelection(TextSelection.create(tr.doc, to)));
                                 outerView.focus();
                             }
@@ -100,6 +96,7 @@ const createInnerEditor = (outerView: EditorView, getPos: () => number) => {
                     }),
                 ],
             }),
+            plugins: [],
             dispatchTransaction: (tr) => {
                 if (!innerView) return;
                 const { state, transactions } = innerView.state.applyTransaction(tr);

@@ -1,5 +1,8 @@
 /* Copyright 2021, Milkdown by Mirone. */
-import { Command, isInTable, Node, NodeType, Selection } from '@milkdown/prose';
+import { Node, NodeType } from '@milkdown/prose/model';
+import { Command, Selection } from '@milkdown/prose/state';
+
+import { isInTable } from './nodes/util';
 
 export const exitTable =
     (node: NodeType): Command =>

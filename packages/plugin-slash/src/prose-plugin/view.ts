@@ -1,5 +1,6 @@
 /* Copyright 2021, Milkdown by Mirone. */
-import { calculateNodePosition, EditorView } from '@milkdown/prose';
+import { calculateNodePosition } from '@milkdown/prose';
+import { EditorView } from '@milkdown/prose/view';
 import { Utils } from '@milkdown/utils';
 
 import { createDropdown } from '../utility';
@@ -29,7 +30,10 @@ const calculatePosition = (view: EditorView, dropdownElement: HTMLElement) => {
         }
 
         if (parent.height + parent.top - selected.bottom < target.height) {
-            top = selected.top - parent.top - target.height - 14 + $editor.scrollTop;
+            const topOffset = selected.top - parent.top - target.height - 14 + $editor.scrollTop;
+            if (topOffset > 0) {
+                top = topOffset;
+            }
         }
         return [top, left];
     });

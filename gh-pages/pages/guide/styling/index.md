@@ -2,7 +2,12 @@
 
 Milkdown is headless, there is no style is provided by default. That means you can import themes or even create your own themes to control the style of your editor.
 
-## Option 1: Style the plain HTML
+## Modify a existing theme
+
+All themes have an `override` method that can be used to modify the theme.
+Please check [Override Theme Documentation](/using-themes#override-theme) if you want to use it.
+
+## Style the plain HTML
 
 The whole editor is rendered inside of a container with the class `.milkdown`. And the editable part is wrapped in the container with the class `editor`. You can use that to scope your styling to the editor content:
 
@@ -20,7 +25,7 @@ For every node/mark, milkdown provides a default className, for example, `paragr
 }
 ```
 
-## Option 2: Add custom class name
+## Add custom class name
 
 You can also use `configure` method to add class to node/mark. In this way, you can use css tools like `tailwind` css.
 
@@ -38,22 +43,27 @@ const nodes = commonmark
 Editor.make().use(nodes);
 ```
 
+## Writing you own theme
+
+It's possible to write your own theme. Please check the [writing themes documentation](/writing-themes).
+
 ## Headless Mode
 
-If you prefer to write all style yourself, you can simply call `headless` method for plugins which support this mode.
+For some plugins with components, we provide styles for it to make it can work out of the box.
+We also provide a headless mode for them which means you can remove their style and use your own.
+
+You can simply call `headless` method for plugins which support this mode.
 
 ```typescript
-import { commonmark } from '@milkdown/preset-commonmark';
+import { math } from '@milkdown/plugin-math';
 
-Editor.make().use(commonmark.headless());
+Editor.make().use(math.headless());
 ```
 
 Plugins supports this mode:
 
--   [@milkdown/preset-commonmark](https://www.npmjs.com/package/@milkdown/preset-commonmark)
--   [@milkdown/preset-gfm](https://www.npmjs.com/package/@milkdown/preset-gfm)
--   [@milkdown/plugin-table](https://www.npmjs.com/package/@milkdown/plugin-table)
 -   [@milkdown/plugin-math](https://www.npmjs.com/package/@milkdown/plugin-math)
 -   [@milkdown/plugin-tooltip](https://www.npmjs.com/package/@milkdown/plugin-tooltip)
 -   [@milkdown/plugin-slash](https://www.npmjs.com/package/@milkdown/plugin-slash)
 -   [@milkdown/plugin-emoji](https://www.npmjs.com/package/@milkdown/plugin-emoji)
+-   [@milkdown/plugin-menu](https://www.npmjs.com/package/@milkdown/plugin-menu)

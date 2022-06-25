@@ -1,6 +1,6 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { editorViewCtx, parserCtx } from '@milkdown/core';
-import { Slice } from '@milkdown/prose';
+import { Slice } from '@milkdown/prose/model';
 import { EditorRef, ReactEditor, useEditor } from '@milkdown/react';
 import { nordDark, nordLight } from '@milkdown/theme-nord';
 import { switchTheme } from '@milkdown/utils';
@@ -42,7 +42,7 @@ export const MilkdownEditor = forwardRef<MilkdownRef, Props>(({ content, readOnl
         },
     }));
 
-    const editor = useEditor(
+    const { editor } = useEditor(
         (root) => createEditor(root, md, readOnly, setEditorReady, onChange),
         [readOnly, md, onChange],
     );

@@ -5,6 +5,7 @@ import {
     ThemeColor,
     themeFactory,
     ThemeFont,
+    ThemeGlobal,
     ThemeIcon,
     ThemeScrollbar,
     ThemeShadow,
@@ -86,23 +87,24 @@ export const getTokyo = (isDarkMode = false) =>
         });
 
         manager.set(ThemeShadow, () => {
-            const { lineWidth } = size;
+            const lineWidth = manager.get(ThemeSize, 'lineWidth');
             const getShadow = (opacity: number) => manager.get(ThemeColor, ['shadow', opacity]);
             return css`
-                box-shadow: 0px ${lineWidth} ${lineWidth} ${getShadow(0.14)}, 0px 2px ${lineWidth} ${getShadow(0.12)},
-                    0px ${lineWidth} 3px ${getShadow(0.2)};
+                box-shadow: 0 ${lineWidth} ${lineWidth} ${getShadow(0.14)}, 0 2px ${lineWidth} ${getShadow(0.12)},
+                    0 ${lineWidth} 3px ${getShadow(0.2)};
             `;
         });
 
         manager.set(ThemeBorder, (direction) => {
+            const lineWidth = manager.get(ThemeSize, 'lineWidth');
             const line = manager.get(ThemeColor, ['line']);
             if (!direction) {
                 return css`
-                    border: ${size.lineWidth} solid ${line};
+                    border: ${lineWidth} solid ${line};
                 `;
             }
             return css`
-                ${`border-${direction}`}: ${size.lineWidth} solid ${line};
+                ${`border-${direction}`}: ${lineWidth} solid ${line};
             `;
         });
 
@@ -112,7 +114,9 @@ export const getTokyo = (isDarkMode = false) =>
             return getIcon(icon);
         });
 
-        getStyle(manager, emotion);
+        manager.set(ThemeGlobal, () => {
+            getStyle(manager, emotion);
+        });
 
         useAllPresetRenderer(manager, emotion);
     });
@@ -120,8 +124,10 @@ export const getTokyo = (isDarkMode = false) =>
 export const tokyoDark = getTokyo(true);
 export const tokyoLight = getTokyo(false);
 
-const darkMode = Boolean(window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+let darkMode = false;
+if (typeof window !== 'undefined') {
+    darkMode = Boolean(window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+}
 export const tokyo = getTokyo(darkMode);
 
 export { color, darkColor, lightColor } from './tokyo';
-export { view } from './view';

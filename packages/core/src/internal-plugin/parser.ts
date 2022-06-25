@@ -1,15 +1,15 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { createSlice, createTimer, MilkdownPlugin, Timer } from '@milkdown/ctx';
-import type { Node as ProsemirrorNode } from '@milkdown/prose';
+import type { Node as ProsemirrorNode } from '@milkdown/prose/model';
 import { createParser, InnerParserSpecMap, ParserSpecWithType } from '@milkdown/transformer';
 
 import { marksCtx, nodesCtx } from '.';
 import { remarkCtx } from './init';
 import { schemaCtx, SchemaReady } from './schema';
 
-export type Parser = (text: string) => ProsemirrorNode | null;
+export type Parser = (text: string) => ProsemirrorNode | undefined;
 
-export const parserCtx = createSlice((() => null) as Parser, 'parser');
+export const parserCtx = createSlice((() => undefined) as Parser, 'parser');
 export const parserTimerCtx = createSlice([] as Timer[], 'parserTimer');
 
 export const ParserReady = createTimer('ParserReady');

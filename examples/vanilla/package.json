@@ -1,7 +1,7 @@
 {
     "name": "@milkdown-examples/vanilla",
     "private": true,
-    "version": "6.0.0-next.0",
+    "version": "6.2.0",
     "license": "MIT",
     "scripts": {
         "start": "vite"
@@ -11,6 +11,8 @@
         "@milkdown/preset-commonmark": "workspace:*",
         "@milkdown/theme-nord": "workspace:*",
         "@milkdown/theme-tokyo": "workspace:*",
-        "@milkdown/plugin-math": "workspace:*"
+        "@milkdown/plugin-math": "workspace:*",
+        "@milkdown/plugin-menu": "workspace:*",
+        "@milkdown/plugin-slash": "workspace:*"
     }
 }

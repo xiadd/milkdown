@@ -1,16 +1,17 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { createSlice, createTimer, MilkdownPlugin, Timer } from '@milkdown/ctx';
-import { EditorView, Plugin, PluginKey, ViewFactory } from '@milkdown/prose';
+import { Plugin, PluginKey } from '@milkdown/prose/state';
+import { DirectEditorProps, EditorView } from '@milkdown/prose/view';
 
 import { editorStateCtx, EditorStateReady } from './editor-state';
-import { InitReady, prosePluginsCtx, viewCtx } from './init';
+import { InitReady, markViewCtx, nodeViewCtx, prosePluginsCtx } from './init';
 
-type EditorOptions = Omit<ConstructorParameters<typeof EditorView>[1], 'state'>;
+type EditorOptions = Omit<DirectEditorProps, 'state'>;
 
 type RootType = Node | undefined | null | string;
 
 export const editorViewCtx = createSlice({} as EditorView, 'editorView');
-export const editorViewOptionsCtx = createSlice({} as EditorOptions, 'editorViewOptions');
+export const editorViewOptionsCtx = createSlice({} as Partial<EditorOptions>, 'editorViewOptions');
 export const rootCtx = createSlice(null as RootType, 'root');
 export const editorViewTimerCtx = createSlice([] as Timer[], 'editorViewTimer');
 
@@ -44,29 +45,43 @@ export const editorView: MilkdownPlugin = (pre) => {
         const root = ctx.get(rootCtx) || document.body;
         const el = typeof root === 'string' ? document.querySelector(root) : root;
 
-        const container = el ? createViewContainer(el) : undefined;
+        ctx.update(prosePluginsCtx, (xs) => [
+            new Plugin({
+                key,
+                view: (editorView) => {
+                    const container = el ? createViewContainer(el) : undefined;
 
-        ctx.update(prosePluginsCtx, (xs) =>
-            xs.concat(
-                new Plugin({
-                    key,
-                    view: () => ({
+                    const handleDOM = () => {
+                        if (container && el) {
+                            const editor = editorView.dom;
+                            el.replaceChild(container, editor);
+                            container.appendChild(editor);
+                        }
+                    };
+                    handleDOM();
+                    return {
                         destroy: () => {
+                            if (container?.parentNode) {
+                                container?.parentNode.replaceChild(editorView.dom, container);
+                            }
                             container?.remove();
                         },
-                    }),
-                }),
-            ),
-        );
+                    };
+                },
+            }),
+            ...xs,
+        ]);
 
         await ctx.waitTimers(editorViewTimerCtx);
 
         const state = ctx.get(editorStateCtx);
         const options = ctx.get(editorViewOptionsCtx);
-        const nodeViews = Object.fromEntries(ctx.get(viewCtx) as [string, ViewFactory][]);
-        const view = new EditorView(container, {
+        const nodeViews = Object.fromEntries(ctx.get(nodeViewCtx));
+        const markViews = Object.fromEntries(ctx.get(markViewCtx));
+        const view = new EditorView(el as Node, {
             state,
             nodeViews,
+            markViews,
             ...options,
         });
         prepareViewDom(view.dom);

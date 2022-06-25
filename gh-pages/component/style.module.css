@@ -1,9 +1,8 @@
 .right {
     display: flex;
     flex-direction: column;
-    transition: all 0.4s ease-out;
+    transition: all 0.4s ease-in-out;
     flex: 1;
-    margin-left: 16rem;
     width: calc(100% - 16rem);
     position: relative;
     &::before {
@@ -17,6 +16,7 @@
         background: palette(shadow, 0.85);
     }
     @mixin query 72rem {
+        margin-left: 16rem;
         &:before {
             all: unset;
         }
@@ -50,7 +50,7 @@
     flex-grow: 1;
     width: 100%;
 
-    article {
+    .content {
         flex-grow: 1;
         transition: all 0.4s ease-in-out;
         background: palette(background);
@@ -72,11 +72,13 @@
 
 .homepage {
     display: flex;
-    article {
+
+    .content {
         justify-content: center;
         padding: 0;
         transition: all 0.4s ease-in-out;
         background: palette(surface);
+
         &::before {
             content: '';
             position: absolute;

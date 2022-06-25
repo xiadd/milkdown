@@ -1,6 +1,7 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { createCmd, createCmdKey } from '@milkdown/core';
-import { AddMarkStep, Plugin, PluginKey, ReplaceStep } from '@milkdown/prose';
+import { Plugin, PluginKey, Selection } from '@milkdown/prose/state';
+import { AddMarkStep, ReplaceStep } from '@milkdown/prose/transform';
 import { createNode, createShortcut } from '@milkdown/utils';
 
 import { SupportedKeys } from '../supported-keys';
@@ -33,7 +34,21 @@ export const hardbreak = createNode<Keys>((utils) => {
         }),
         commands: (type) => [
             createCmd(InsertHardbreak, () => (state, dispatch) => {
-                dispatch?.(state.tr.setMeta('hardbreak', true).replaceSelectionWith(type.create()).scrollIntoView());
+                const { selection, tr } = state;
+                if (selection.empty) {
+                    // Transform two successive hardbreak into a new line
+                    const node = selection.$from.node();
+                    if (node.childCount > 0 && node.lastChild?.type.name === 'hardbreak') {
+                        dispatch?.(
+                            tr
+                                .replaceRangeWith(selection.to - 1, selection.to, state.schema.node('paragraph'))
+                                .setSelection(Selection.near(tr.doc.resolve(selection.to)))
+                                .scrollIntoView(),
+                        );
+                        return true;
+                    }
+                }
+                dispatch?.(tr.setMeta('hardbreak', true).replaceSelectionWith(type.create()).scrollIntoView());
                 return true;
             }),
         ],
@@ -42,7 +57,7 @@ export const hardbreak = createNode<Keys>((utils) => {
         },
         prosePlugins: (type) => [
             new Plugin({
-                key: new PluginKey('MILKDOWN_PLUGIN_HARDBREAK_MARKS'),
+                key: new PluginKey('MILKDOWN_HARDBREAK_MARKS'),
                 appendTransaction: (trs, _oldState, newState) => {
                     if (!trs.length) return;
                     const [tr] = trs;

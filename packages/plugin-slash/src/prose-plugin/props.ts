@@ -1,6 +1,8 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { Color, Emotion, ThemeColor, ThemeFont, ThemeManager } from '@milkdown/core';
-import { Decoration, DecorationSet, EditorState, EditorView, findParentNode } from '@milkdown/prose';
+import { findParentNode } from '@milkdown/prose';
+import { EditorState } from '@milkdown/prose/state';
+import { Decoration, DecorationSet, EditorView } from '@milkdown/prose/view';
 import { Utils } from '@milkdown/utils';
 
 import type { Status } from './status';
@@ -52,12 +54,12 @@ export const createProps = (status: Status, utils: Utils) => {
         decorations: (state: EditorState) => {
             const paragraph = findParentNode(({ type }) => type.name === 'paragraph')(state.selection);
             const uploadPlugin = state.plugins.find(
-                (x) => (x as unknown as { key: string }).key === 'MILKDOWN_PLUGIN_UPLOAD$',
+                (x) => (x as unknown as { key: string }).key === 'MILKDOWN_UPLOAD$',
             );
             const decorations: DecorationSet = uploadPlugin?.getState(state);
             if (decorations != null && decorations.find(state.selection.from, state.selection.to).length > 0) {
                 status.clear();
-                return;
+                return null;
             }
 
             if (
@@ -67,7 +69,7 @@ export const createProps = (status: Status, utils: Utils) => {
                 (paragraph.node.firstChild && paragraph.node.firstChild.type.name !== 'text')
             ) {
                 status.clear();
-                return;
+                return null;
             }
 
             const { placeholder, actions } = status.update({
@@ -91,8 +93,8 @@ export const createProps = (status: Status, utils: Utils) => {
                 ]);
             };
 
-            const emptyStyle = utils.getStyle(createEmptyStyle);
-            const slashStyle = utils.getStyle(createSlashStyle);
+            const emptyStyle = utils.getStyle((emotion) => createEmptyStyle(utils.themeManager, emotion));
+            const slashStyle = utils.getStyle((emotion) => createSlashStyle(utils.themeManager, emotion));
 
             if (actions.length) {
                 return createDecoration(placeholder, [emptyStyle, slashStyle, 'empty-node', 'is-slash']);

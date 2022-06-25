@@ -9,10 +9,11 @@ import {
     inputRulesCtx,
     prosePluginsCtx,
     remarkPluginsCtx,
+    Slice,
     themeManagerCtx,
 } from '@milkdown/core';
 import { themeMustInstalled } from '@milkdown/exception';
-import { keymap } from '@milkdown/prose';
+import { keymap } from '@milkdown/prose/keymap';
 
 import {
     AddMetadata,
@@ -29,7 +30,7 @@ import {
 export const getClassName =
     (className: CommonOptions['className']) =>
     (attrs: Attrs, ...defaultValue: (string | null | undefined)[]): string => {
-        const classList = className?.(attrs) ?? defaultValue;
+        const classList = className?.(attrs, ...defaultValue) ?? defaultValue;
         return Array.isArray(classList) ? classList.filter((x) => x).join(' ') : classList;
     };
 
@@ -46,7 +47,7 @@ export const getUtils = <Options extends UnknownRecord>(ctx: Ctx, options?: Opti
 
         return {
             getClassName: getClassName(options?.['className'] as undefined),
-            getStyle: (style) => (options?.['headless'] ? '' : (style(themeManager, emotion) as string | undefined)),
+            getStyle: (style) => (options?.['headless'] ? '' : (style(emotion) as string | undefined)),
             themeManager,
         };
     } catch {
@@ -119,12 +120,17 @@ export const addMetadata = <SupportedKeys extends string = string, Options exten
 export const withExtend = <SupportedKeys extends string, Options extends UnknownRecord, Type, Rest>(
     factory: Factory<SupportedKeys, Options, Type, Rest>,
     origin: AddMetadata<SupportedKeys, Options>,
-    creator: (factory: Factory<SupportedKeys, Options, Type, Rest>) => WithExtend<SupportedKeys, Options, Type, Rest>,
+    creator: (
+        factory: Factory<SupportedKeys, Options, Type, Rest>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        inject?: Slice<any>[],
+    ) => WithExtend<SupportedKeys, Options, Type, Rest>,
 ): WithExtend<SupportedKeys, Options, Type, Rest> => {
     type Ext = WithExtend<SupportedKeys, Options, Type, Rest>;
     const next = origin as Ext;
-    const extend = (extendFactory: Parameters<Ext['extend']>[0]) =>
-        creator((...args) => extendFactory(factory(...args), ...args));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const extend = (extendFactory: Parameters<Ext['extend']>[0], inject?: Slice<any>[]) =>
+        creator((...args) => extendFactory(factory(...args), ...args), inject);
 
     next.extend = extend as Ext['extend'];
 

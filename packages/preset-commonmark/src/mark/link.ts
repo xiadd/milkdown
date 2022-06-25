@@ -1,17 +1,14 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { commandsCtx, createCmd, createCmdKey, schemaCtx, ThemeInputChipType } from '@milkdown/core';
-import {
-    EditorView,
-    InputRule,
-    Node as ProseNode,
-    Plugin,
-    PluginKey,
-    TextSelection,
-    toggleMark,
-} from '@milkdown/prose';
+import { calculateTextPosition } from '@milkdown/prose';
+import { toggleMark } from '@milkdown/prose/commands';
+import { InputRule } from '@milkdown/prose/inputrules';
+import { Node as ProseNode } from '@milkdown/prose/model';
+import { NodeSelection, Plugin, PluginKey, TextSelection } from '@milkdown/prose/state';
+import { EditorView } from '@milkdown/prose/view';
 import { createMark } from '@milkdown/utils';
 
-const key = new PluginKey('MILKDOWN_PLUGIN_LINK_INPUT');
+const key = new PluginKey('MILKDOWN_LINK_INPUT');
 
 export const ToggleLink = createCmdKey<string>('ToggleLink');
 export const ModifyLink = createCmdKey<string>('ModifyLink');
@@ -73,8 +70,9 @@ export const link = createMark<string, LinkOptions>((utils, options) => {
                 let node: ProseNode | undefined;
                 let pos = -1;
                 const { selection } = state;
-                state.doc.nodesBetween(selection.from, selection.to, (n, p) => {
-                    if (marks.link.isInSet(n.marks)) {
+                const { from, to } = selection;
+                state.doc.nodesBetween(from, from === to ? to + 1 : to, (n, p) => {
+                    if (marks['link']?.isInSet(n.marks)) {
                         node = n;
                         pos = p;
                         return false;
@@ -89,7 +87,8 @@ export const link = createMark<string, LinkOptions>((utils, options) => {
                 const start = pos;
                 const end = pos + node.nodeSize;
                 const { tr } = state;
-                const linkMark = marks.link.create({ ...mark.attrs, href });
+                const linkMark = marks['link']?.create({ ...mark.attrs, href });
+                if (!linkMark) return false;
                 dispatch(
                     tr
                         .removeMark(start, end, mark)
@@ -118,58 +117,102 @@ export const link = createMark<string, LinkOptions>((utils, options) => {
             }),
         ],
         prosePlugins: (type, ctx) => {
-            const inputChipRenderer = utils.themeManager.get<ThemeInputChipType>('input-chip', {
-                placeholder: options?.input?.placeholder ?? 'Input Web Link',
-                buttonText: options?.input?.buttonText,
-                onUpdate: (value) => {
-                    ctx.get(commandsCtx).call(ModifyLink, value);
-                },
-            });
-            const shouldDisplay = (view: EditorView) => {
-                const { selection, doc } = view.state;
-                const { from, to } = selection;
-
-                return (
-                    selection.empty &&
-                    selection instanceof TextSelection &&
-                    doc.rangeHasMark(from, from === to ? to + 1 : to, type)
-                );
-            };
-            const getCurrentLink = (view: EditorView) => {
-                const { selection } = view.state;
-                let node: ProseNode | undefined;
-                const { from, to } = selection;
-                view.state.doc.nodesBetween(from, from === to ? to + 1 : to, (n) => {
-                    if (type.isInSet(n.marks)) {
-                        node = n;
-                        return false;
-                    }
-                    return;
-                });
-                if (!node) return;
-
-                const mark = node.marks.find((m) => m.type === type);
-                if (!mark) return;
-
-                const value = mark.attrs['href'];
-                return value;
-            };
-            const renderByView = (view: EditorView) => {
-                if (!view.editable) {
-                    return;
-                }
-                const display = shouldDisplay(view);
-                if (display) {
-                    inputChipRenderer.show(view);
-                    inputChipRenderer.update(getCurrentLink(view));
-                } else {
-                    inputChipRenderer.hide();
-                }
-            };
+            let renderOnTop = false;
             return [
                 new Plugin({
                     key,
                     view: (editorView) => {
+                        const inputChipRenderer = utils.themeManager.get<ThemeInputChipType>('input-chip', {
+                            placeholder: options?.input?.placeholder ?? 'Input Web Link',
+                            buttonText: options?.input?.buttonText,
+                            onUpdate: (value) => {
+                                ctx.get(commandsCtx).call(ModifyLink, value);
+                            },
+                            calculatePosition: (view, input) => {
+                                calculateTextPosition(view, input, (start, end, target, parent) => {
+                                    const $editor = view.dom.parentElement;
+                                    if (!$editor) {
+                                        throw new Error();
+                                    }
+
+                                    const selectionWidth = end.left - start.left;
+                                    let left = start.left - parent.left - (target.width - selectionWidth) / 2;
+                                    let top = start.bottom - parent.top + 14 + $editor.scrollTop;
+
+                                    if (renderOnTop) {
+                                        top = start.top - parent.top - target.height - 14 + $editor.scrollTop;
+                                    }
+
+                                    if (left < 0) left = 0;
+
+                                    return [top, left];
+                                });
+                            },
+                        });
+                        if (!inputChipRenderer) return {};
+                        const shouldDisplay = (view: EditorView) => {
+                            const { selection, doc } = view.state;
+                            const { from, to } = selection;
+
+                            if (!view.hasFocus()) {
+                                return false;
+                            }
+
+                            if (
+                                selection.empty &&
+                                selection instanceof TextSelection &&
+                                to < doc.content.size &&
+                                from < doc.content.size &&
+                                doc.rangeHasMark(from, from === to ? to + 1 : to, type)
+                            ) {
+                                renderOnTop = false;
+                                return true;
+                            }
+
+                            if (selection instanceof NodeSelection) {
+                                const { node } = selection;
+                                if (
+                                    node.type.name === 'image' &&
+                                    node.marks.findIndex((mark) => mark.type.name === id) > -1
+                                ) {
+                                    renderOnTop = true;
+                                    return true;
+                                }
+                            }
+
+                            return false;
+                        };
+                        const getCurrentLink = (view: EditorView) => {
+                            const { selection } = view.state;
+                            let node: ProseNode | undefined;
+                            const { from, to } = selection;
+                            view.state.doc.nodesBetween(from, from === to ? to + 1 : to, (n) => {
+                                if (type.isInSet(n.marks)) {
+                                    node = n;
+                                    return false;
+                                }
+                                return;
+                            });
+                            if (!node) return;
+
+                            const mark = node.marks.find((m) => m.type === type);
+                            if (!mark) return;
+
+                            const value = mark.attrs['href'];
+                            return value;
+                        };
+                        const renderByView = (view: EditorView) => {
+                            if (!view.editable) {
+                                return;
+                            }
+                            const display = shouldDisplay(view);
+                            if (display) {
+                                inputChipRenderer.show(view);
+                                inputChipRenderer.update(getCurrentLink(view));
+                            } else {
+                                inputChipRenderer.hide();
+                            }
+                        };
                         inputChipRenderer.init(editorView);
                         renderByView(editorView);
 
@@ -179,7 +222,9 @@ export const link = createMark<string, LinkOptions>((utils, options) => {
                                     prevState?.doc.eq(view.state.doc) && prevState.selection.eq(view.state.selection);
                                 if (isEqualSelection) return;
 
-                                renderByView(view);
+                                requestAnimationFrame(() => {
+                                    renderByView(view);
+                                });
                             },
                             destroy: () => {
                                 inputChipRenderer.destroy();

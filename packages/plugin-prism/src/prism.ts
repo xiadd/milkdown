@@ -1,11 +1,12 @@
 /* Copyright 2021, Milkdown by Mirone. */
-import { findChildren, Plugin, PluginKey } from '@milkdown/prose';
+import { findChildren } from '@milkdown/prose';
+import { Plugin, PluginKey } from '@milkdown/prose/state';
 import { refractor } from 'refractor/lib/common';
 
 import type { Options } from '.';
 import { getDecorations } from './get-decorations';
 
-export const key = 'MILKDOWN_PLUGIN_PRISM';
+export const key = 'MILKDOWN_PRISM';
 
 export function Prism(options: Options): Plugin {
     const { nodeName: name, configureRefractor } = options;
@@ -46,7 +47,7 @@ export function Prism(options: Options): Plugin {
             },
         },
         props: {
-            decorations(state) {
+            decorations(this: Plugin, state) {
                 return this.getState(state);
             },
         },

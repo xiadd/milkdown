@@ -1,7 +1,8 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { ThemeIcon, ThemeManager } from '@milkdown/core';
 import type { Icon } from '@milkdown/design-system';
-import type { Command, Node } from '@milkdown/prose';
+import type { Node } from '@milkdown/prose/model';
+import type { Command } from '@milkdown/prose/state';
 import type { Utils } from '@milkdown/utils';
 
 import { injectStyle } from './style';
@@ -11,14 +12,14 @@ export const createDropdown = (utils: Utils, className: string) => {
     div.setAttribute('role', 'listbox');
     div.setAttribute('tabindex', '-1');
     utils.themeManager.onFlush(() => {
-        const style = utils.getStyle(injectStyle);
+        const style = utils.getStyle((emotion) => injectStyle(utils.themeManager, emotion));
 
         if (style) {
             div.classList.add(style);
         }
     });
 
-    div.classList.add(className, 'hide');
+    div.classList.add(utils.getClassName({}, className), 'hide');
 
     return div;
 };

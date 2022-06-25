@@ -1,8 +1,10 @@
 /* Copyright 2021, Milkdown by Mirone. */
+import { ThemeSliceKey } from '../manager';
 import { ThemeBorder } from './border';
 import { ThemeCodeFence } from './code-fence';
 import { ThemeColor } from './color';
 import { ThemeFont } from './font';
+import { ThemeGlobal } from './global';
 import { ThemeIcon } from './icon';
 import { ThemeImage } from './image';
 import { ThemeInnerEditor } from './inner-editor';
@@ -13,6 +15,7 @@ import { ThemeSize } from './size';
 import { ThemeTaskListItem } from './task-list-item';
 
 export const internalThemeKeys = [
+    /** Props */
     ThemeColor,
     ThemeSize,
     ThemeFont,
@@ -20,18 +23,21 @@ export const internalThemeKeys = [
     ThemeShadow,
     ThemeBorder,
     ThemeIcon,
+    ThemeGlobal,
 
+    /** Renderer */
     ThemeCodeFence,
     ThemeImage,
     ThemeInnerEditor,
     ThemeTaskListItem,
     ThemeInputChip,
-] as const;
+] as readonly ThemeSliceKey[];
 
 export * from './border';
 export * from './code-fence';
 export * from './color';
 export * from './font';
+export * from './global';
 export * from './icon';
 export * from './image';
 export * from './inner-editor';

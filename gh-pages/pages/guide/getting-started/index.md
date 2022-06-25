@@ -9,7 +9,7 @@ Milkdown is a lightweight but powerful WYSIWYG markdown editor. It's made up by 
 
 With this pattern you can enable or disable any custom syntax and feature you like, such as table, latex and slash commands. You can even create your own plugin to support your awesome idea.
 
-> :baby_bottle: Fun fact: The Milkdown documentation is rendered by milkdown.
+> 🍼 Fun fact: The Milkdown documentation is rendered by milkdown.
 
 ---
 
@@ -24,7 +24,7 @@ With this pattern you can enable or disable any custom syntax and feature you li
 -   [x] 📊 **Table** - Table support with fluent ui, driven by plugin
 -   [x] 🍻 **Collaborate** - Shared editing support with [yjs](https://docs.yjs.dev/), driven by plugin
 -   [x] 💾 **Clipboard** - Support copy and paste markdown, driven by plugin
--   [x] :+1: **Emoji** - Support emoji shortcut and picker, driven by plugin
+-   [x] 👍 **Emoji** - Support emoji shortcut and picker, driven by plugin
 
 ## Tech Stack
 

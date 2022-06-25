@@ -1,7 +1,7 @@
 {
     "name": "@milkdown/e2e",
     "private": true,
-    "version": "6.0.0-next.0",
+    "version": "6.2.0",
     "scripts": {
         "start": "vite",
         "build": "vite build",
@@ -26,7 +26,7 @@
     },
     "devDependencies": {
         "@cypress/snapshot": "^2.1.7",
-        "cypress": "^9.2.0",
+        "cypress": "^10.0.0",
         "start-server-and-test": "^1.13.0"
     },
     "nx": {

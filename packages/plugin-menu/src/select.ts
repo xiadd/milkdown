@@ -11,7 +11,7 @@ import {
     ThemeShadow,
     ThemeSize,
 } from '@milkdown/core';
-import { EditorView } from '@milkdown/prose';
+import { EditorView } from '@milkdown/prose/view';
 import { Utils } from '@milkdown/utils';
 
 import type { CommonConfig } from './default-config';
@@ -27,7 +27,7 @@ export type SelectConfig<T = any> = {
     text: string;
     options: SelectOptions[];
     active?: (view: EditorView) => string;
-    onSelect: (id: string, view: EditorView) => [key: CmdKey<T> | string, info?: T];
+    onSelect: (id: string, view: EditorView) => [key: CmdKey<T> | string, payload?: T];
 } & CommonConfig;
 
 export const select = (utils: Utils, config: SelectConfig, ctx: Ctx, view: EditorView) => {
@@ -53,12 +53,14 @@ export const select = (utils: Utils, config: SelectConfig, ctx: Ctx, view: Edito
     selectorValue.classList.add('menu-selector-value');
     selectorValue.textContent = config.text;
 
-    const selectorButton = utils.themeManager.get(ThemeIcon, 'downArrow')?.dom as HTMLElement;
-    selectorButton.setAttribute('aria-hidden', 'true');
+    const selectorButton = utils.themeManager.get(ThemeIcon, 'downArrow')?.dom;
 
     selectorWrapper.appendChild(selector);
     selector.appendChild(selectorValue);
-    selector.appendChild(selectorButton);
+    if (selectorButton) {
+        selectorButton.setAttribute('aria-hidden', 'true');
+        selector.appendChild(selectorButton);
+    }
 
     const selectorList = document.createElement('div');
     selectorList.classList.add('menu-selector-list');
@@ -75,11 +77,11 @@ export const select = (utils: Utils, config: SelectConfig, ctx: Ctx, view: Edito
         const { target } = e;
         if (target instanceof HTMLButtonElement && target.dataset['id']) {
             const params = config.onSelect(target.dataset['id'], view);
-            const [key, info] = params;
+            const [key, payload] = params;
             if (typeof key === 'string') {
-                ctx.get(commandsCtx).call(key, info);
+                ctx.get(commandsCtx).call(key, payload);
             } else {
-                ctx.get(commandsCtx).call(key, info);
+                ctx.get(commandsCtx).call(key, payload);
             }
             selectorWrapper.classList.add('fold');
         }
@@ -87,8 +89,9 @@ export const select = (utils: Utils, config: SelectConfig, ctx: Ctx, view: Edito
 
     selectorWrapper.appendChild(selectorList);
 
-    utils.themeManager.onFlush(() => {
-        const selectStyle = utils.getStyle((themeManager, { css }) => {
+    const { themeManager } = utils;
+    themeManager.onFlush(() => {
+        const selectStyle = utils.getStyle(({ css }) => {
             const palette = (color: Color, opacity = 1) => themeManager.get(ThemeColor, [color, opacity]);
             return css`
                 flex-shrink: 0;
@@ -98,7 +101,7 @@ export const select = (utils: Utils, config: SelectConfig, ctx: Ctx, view: Edito
                 ${themeManager.get(ThemeBorder, 'right')}
                 ${themeManager.get(ThemeBorder, 'left')}
 
-            .menu-selector {
+                .menu-selector {
                     border: 0;
                     box-sizing: unset;
                     cursor: pointer;
@@ -108,8 +111,9 @@ export const select = (utils: Utils, config: SelectConfig, ctx: Ctx, view: Edito
                     align-items: center;
                     color: ${palette('neutral', 0.87)};
                     display: flex;
-                    padding: 0.5em;
+                    padding: 0.25em;
                     margin: 0.5em;
+                    height: 2em;
                     background: ${palette('secondary', 0.12)};
                     width: 10.375em;
 
@@ -125,12 +129,12 @@ export const select = (utils: Utils, config: SelectConfig, ctx: Ctx, view: Edito
                 }
 
                 .menu-selector-list {
-                    width: calc(12.375em);
+                    width: 11.875em;
                     position: absolute;
                     background: ${palette('surface')};
                     ${themeManager.get(ThemeBorder, undefined)}
                     ${themeManager.get(ThemeShadow, undefined)}
-                border-bottom-left-radius: ${themeManager.get(ThemeSize, 'radius')};
+                    border-bottom-left-radius: ${themeManager.get(ThemeSize, 'radius')};
                     border-bottom-right-radius: ${themeManager.get(ThemeSize, 'radius')};
                     z-index: 3;
                 }

@@ -1,12 +1,12 @@
 /* Copyright 2021, Milkdown by Mirone. */
-import { EditorView } from '@milkdown/prose';
+import { EditorView } from '@milkdown/prose/view';
 
 import { ButtonMap } from '../item';
 import { noActive } from './no-active';
 
 export const filterButton = (buttonMap: ButtonMap, view: EditorView) => {
     Object.values(buttonMap)
-        .filter((item) => item.enable(view))
+        .filter((item) => item.enable(view) && item.$ != null)
         .forEach((item) => {
             const disable = item.disable?.(view);
             if (disable) {

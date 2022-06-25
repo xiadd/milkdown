@@ -1,8 +1,7 @@
 /* Copyright 2021, Milkdown by Mirone. */
 
-import { CmdKey, commandsCtx, Ctx, ThemeColor, ThemeIcon } from '@milkdown/core';
-import type { Color, Icon } from '@milkdown/design-system';
-import type { EditorView } from '@milkdown/prose';
+import { CmdKey, commandsCtx, Ctx, getPalette, Icon, ThemeIcon } from '@milkdown/core';
+import type { EditorView } from '@milkdown/prose/view';
 import type { Utils } from '@milkdown/utils';
 
 import type { CommonConfig } from './default-config';
@@ -19,10 +18,11 @@ export type ButtonConfig<T = any> = {
 export const button = (utils: Utils, config: ButtonConfig, ctx: Ctx) => {
     const $button = document.createElement('button');
     $button.setAttribute('type', 'button');
-    $button.classList.add('button');
     utils.themeManager.onFlush(() => {
-        const buttonStyle = utils.getStyle((themeManager, { css }) => {
-            const palette = (color: Color, opacity = 1) => themeManager.get(ThemeColor, [color, opacity]);
+        $button.className = 'button';
+
+        const buttonStyle = utils.getStyle(({ css }) => {
+            const palette = getPalette(utils.themeManager);
             return css`
                 border: 0;
                 box-sizing: unset;
@@ -65,16 +65,19 @@ export const button = (utils: Utils, config: ButtonConfig, ctx: Ctx) => {
     });
 
     const $icon = utils.themeManager.get(ThemeIcon, config.icon);
-    if (!$icon) {
-        throw new Error();
+    if ($icon) {
+        const { label, dom } = $icon;
+        if (label) {
+            $button.setAttribute('aria-label', label);
+            $button.setAttribute('title', label);
+        }
+        $button.appendChild(dom);
+    } else {
+        $button.setAttribute('aria-label', config.icon);
+        $button.setAttribute('title', config.icon);
+        $button.textContent = config.icon;
     }
 
-    const { label, dom } = $icon;
-    if (label) {
-        $button.setAttribute('aria-label', label);
-        $button.setAttribute('title', label);
-    }
-    $button.appendChild(dom);
     $button.addEventListener('mousedown', (e) => {
         e.preventDefault();
         e.stopPropagation();

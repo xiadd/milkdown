@@ -1,6 +1,6 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { RemarkPlugin } from '@milkdown/core';
-import { InputRule } from '@milkdown/prose';
+import { InputRule } from '@milkdown/prose/inputrules';
 import { createNode } from '@milkdown/utils';
 import nodeEmoji from 'node-emoji';
 import remarkEmoji from 'remark-emoji';
@@ -14,14 +14,10 @@ export type EmojiOptions = {
     maxListSize: number;
 };
 
-export const emoji = createNode<string, EmojiOptions>((utils, options) => {
+export const emojiNode = createNode<string, EmojiOptions>((utils, options) => {
     const getStyle = () =>
         utils.getStyle(
-            (_, { css }) => css`
-                display: inline-flex;
-                justify-content: center;
-                align-items: center;
-
+            ({ css }) => css`
                 .emoji {
                     height: 1em;
                     width: 1em;
@@ -35,7 +31,7 @@ export const emoji = createNode<string, EmojiOptions>((utils, options) => {
         schema: () => ({
             group: 'inline',
             inline: true,
-            selectable: false,
+            atom: true,
             attrs: {
                 html: {
                     default: '',
@@ -54,6 +50,7 @@ export const emoji = createNode<string, EmojiOptions>((utils, options) => {
             ],
             toDOM: (node) => {
                 const span = document.createElement('span');
+                span.classList.add('emoji-wrapper');
                 span.dataset['type'] = 'emoji';
                 utils.themeManager.onFlush(() => {
                     const style = getStyle();
@@ -61,7 +58,6 @@ export const emoji = createNode<string, EmojiOptions>((utils, options) => {
                         span.classList.add(style);
                     }
                 });
-                span.classList.add('emoji-wrapper');
                 span.innerHTML = node.attrs['html'];
                 return { dom: span };
             },

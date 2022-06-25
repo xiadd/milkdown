@@ -9,9 +9,8 @@
 import path from 'path';
 import type { Plugin } from 'rollup';
 import autoExternal from 'rollup-plugin-auto-external';
-import type { BuildOptions, UserConfig as ViteUserConfig } from 'vite';
+import type { BuildOptions, UserConfig as ViteUserConfig, UserConfigExport } from 'vite';
 import { defineConfig } from 'vite';
-import { UserConfig } from 'vitest';
 
 export const libFileName = (format: string) => `index.${format}.js`;
 
@@ -54,9 +53,21 @@ export const external = [
     '@milkdown/ctx',
     '@milkdown/design-system',
     '@milkdown/exception',
-    '@milkdown/prose',
     '@milkdown/transformer',
     '@milkdown/utils',
+    '@milkdown/prose',
+    '@milkdown/prose/commands',
+    '@milkdown/prose/dropcursor',
+    '@milkdown/prose/gapcursor',
+    '@milkdown/prose/history',
+    '@milkdown/prose/inputrules',
+    '@milkdown/prose/keymap',
+    '@milkdown/prose/model',
+    '@milkdown/prose/schema-list',
+    '@milkdown/prose/state',
+    '@milkdown/prose/tables',
+    '@milkdown/prose/transform',
+    '@milkdown/prose/view',
     '@milkdown/preset-gfm',
     '@milkdown/preset-commonmark',
     '@milkdown/plugin-clipboard',
@@ -73,6 +84,7 @@ export const external = [
     '@milkdown/plugin-slash',
     '@milkdown/plugin-tooltip',
     '@milkdown/plugin-upload',
+    '@milkdown/plugin-trailing',
 ];
 
 export const viteBuild = (packageDirName: string, options: BuildOptions = {}): BuildOptions =>
@@ -96,12 +108,19 @@ export const viteBuild = (packageDirName: string, options: BuildOptions = {}): B
         options,
     );
 
+/**
+ * Config for plugins
+ *
+ * @param packageDirName - package directory name
+ * @param options - custom options
+ * @returns user config
+ */
 export const pluginViteConfig = (packageDirName: string, options: ViteUserConfig = {}) => {
     const vitePlugins = options.plugins ?? [];
     return defineConfig({
         ...options,
         build: viteBuild(packageDirName, options.build),
-        plugins: vitePlugins,
+        plugins: [...vitePlugins, ...rollupPlugins],
     });
 };
 
@@ -110,4 +129,4 @@ export default defineConfig({
         include: ['packages/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
         environment: 'jsdom',
     },
-} as UserConfig);
+} as UserConfigExport);

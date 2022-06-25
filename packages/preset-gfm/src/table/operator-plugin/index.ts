@@ -1,9 +1,11 @@
 /* Copyright 2021, Milkdown by Mirone. */
 
 import { Ctx } from '@milkdown/core';
-import { CellSelection, Decoration, DecorationSet, Plugin, PluginKey } from '@milkdown/prose';
+import { Plugin, PluginKey } from '@milkdown/prose/state';
+import { Decoration, DecorationSet } from '@milkdown/prose/view';
 import { Utils } from '@milkdown/utils';
 
+import { CellSelection } from '../nodes/cell-selection';
 import { CellPos, getCellsInColumn, getCellsInRow } from '../utils';
 import { createActions } from './actions';
 import { calculatePosition } from './calc-pos';
@@ -12,19 +14,9 @@ import { calculateItem } from './helper';
 import { injectStyle } from './style';
 import { createWidget } from './widget';
 
-export const key = 'MILKDOWN_PLUGIN_TABLE';
+export const key = 'MILKDOWN_TABLE';
 
 export const operatorPlugin = (ctx: Ctx, utils: Utils) => {
-    const items = createActions(ctx);
-    const tooltip = document.createElement('div');
-    utils.themeManager.onFlush(() => {
-        const style = utils.getStyle(injectStyle);
-        if (style) {
-            tooltip.classList.add(style);
-        }
-    });
-    tooltip.classList.add('table-tooltip', 'hide');
-
     return new Plugin({
         key: new PluginKey('MILKDOWN_TABLE_OP'),
         props: {
@@ -49,6 +41,15 @@ export const operatorPlugin = (ctx: Ctx, utils: Utils) => {
             },
         },
         view: (editorView) => {
+            const items = Object.fromEntries(Object.entries(createActions(ctx)).filter(([, value]) => value.$ != null));
+            const tooltip = document.createElement('div');
+            utils.themeManager.onFlush(() => {
+                const style = utils.getStyle((emotion) => injectStyle(utils.themeManager, emotion));
+                if (style) {
+                    tooltip.classList.add(style);
+                }
+            });
+            tooltip.classList.add('table-tooltip', 'hide');
             Object.values(items).forEach(({ $ }) => tooltip.appendChild($));
             editorView.dom.parentNode?.appendChild(tooltip);
 

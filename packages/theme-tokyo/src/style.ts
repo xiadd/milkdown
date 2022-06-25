@@ -2,8 +2,7 @@
 
 import { Emotion, ThemeBorder, ThemeFont, ThemeManager, ThemeScrollbar, ThemeShadow, ThemeSize } from '@milkdown/core';
 import { getPalette } from '@milkdown/design-system';
-
-import { view } from './view';
+import { injectProsemirrorView } from '@milkdown/theme-pack-helper';
 
 export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
     const { injectGlobal, css } = emotion;
@@ -37,11 +36,6 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
         outline: none;
         & > * {
             margin: 1.875em 0;
-        }
-
-        @media only screen and (min-width: 72rem) {
-            max-width: 57.375em;
-            padding: 3.125em 7.25em;
         }
     `;
 
@@ -197,6 +191,8 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
 
     const footnote = css`
         .footnote-definition {
+            ${manager.get(ThemeBorder, undefined)};
+            padding: 1em;
             display: flex;
             flex-direction: row;
             & > .footnote-definition_content {
@@ -293,8 +289,9 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
         }
     `;
 
+    injectProsemirrorView(emotion);
+
     injectGlobal`
-        ${view(emotion)};
         .milkdown {
             .material-icons-outlined {
                 font-size: 1.5em;
@@ -315,10 +312,6 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
             ${selection};
 
             .editor {
-                &[contenteditable="true"] {
-                    user-modify: read-write-plaintext-only;
-                }
-
                 ${editorLayout};
 
                 ${paragraph};

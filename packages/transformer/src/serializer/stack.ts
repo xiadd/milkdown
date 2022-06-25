@@ -1,5 +1,5 @@
 /* Copyright 2021, Milkdown by Mirone. */
-import { Mark } from '@milkdown/prose';
+import { Mark } from '@milkdown/prose/model';
 import { Root } from 'mdast';
 
 import type { MarkdownNode } from '..';
@@ -7,7 +7,7 @@ import { getStackUtil, JSONRecord } from '../utility';
 import { createElement, StackElement } from './stack-element';
 
 type Ctx = {
-    marks: Mark[];
+    marks: readonly Mark[];
     readonly elements: StackElement[];
 };
 

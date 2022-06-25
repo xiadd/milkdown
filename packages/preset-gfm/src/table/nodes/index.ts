@@ -1,20 +1,17 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { createCmd, createCmdKey, MarkdownNode, schemaCtx } from '@milkdown/core';
-import {
-    columnResizing,
-    goToNextCell,
-    InputRule,
-    NodeType,
-    Selection,
-    tableEditing,
-    TextSelection,
-} from '@milkdown/prose';
+import { InputRule } from '@milkdown/prose/inputrules';
+import { NodeType } from '@milkdown/prose/model';
+import { Plugin, PluginKey, Selection, TextSelection } from '@milkdown/prose/state';
 import { createPlugin, createShortcut } from '@milkdown/utils';
 
 import { exitTable } from '../command';
 import { operatorPlugin } from '../operator-plugin';
 import { createTable } from '../utils';
+import { columnResizing } from './column-resizing';
+import { goToNextCell } from './commands';
 import { schema } from './schema';
+import { tableEditing } from './table-editing';
 
 export const SupportedKeys = {
     NextCell: 'NextCell',
@@ -29,6 +26,8 @@ export const PrevCell = createCmdKey('PrevCell');
 export const NextCell = createCmdKey('NextCell');
 export const BreakTable = createCmdKey('BreakTable');
 export const InsertTable = createCmdKey('InsertTable');
+
+export const TableContentFilterPluginKey = new PluginKey('MILKDOWN_TABLE_CONTENT_FILTER');
 
 export const table = createPlugin<Keys, Record<string, unknown>, keyof typeof schema>((utils) => {
     return {
@@ -169,7 +168,36 @@ export const table = createPlugin<Keys, Record<string, unknown>, keyof typeof sc
             [SupportedKeys.ExitTable]: createShortcut(BreakTable, 'Mod-Enter'),
         },
         prosePlugins: (_, ctx) => {
-            return [operatorPlugin(ctx, utils), columnResizing({}), tableEditing()];
+            return [
+                operatorPlugin(ctx, utils),
+                columnResizing({}),
+                tableEditing(),
+                new Plugin({
+                    key: TableContentFilterPluginKey,
+                    filterTransaction: (tr, state) => {
+                        const isInsertHr = tr.getMeta('hardbreak');
+                        const [step] = tr.steps;
+                        if (isInsertHr && step) {
+                            const { from } = step as unknown as { from: number };
+                            const $from = state.doc.resolve(from);
+                            let curDepth = $from.depth;
+                            let canApply = true;
+                            while (curDepth > 0) {
+                                if ($from.node(curDepth).type.name === 'table') {
+                                    canApply = false;
+                                }
+                                curDepth--;
+                            }
+                            return canApply;
+                        }
+                        return true;
+                    },
+                }),
+            ];
         },
     };
 });
+
+export * from './cell-selection';
+export * from './commands';
+export * from './util';

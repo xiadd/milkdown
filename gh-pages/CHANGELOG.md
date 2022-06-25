@@ -1,5 +1,393 @@
 # @milkdown/gh-pages
 
+## 6.2.0
+
+### Minor Changes
+
+-   26afcdaf: New react and vue API, custom heading id, prosemirror upgrade, and async composable API.
+
+### Patch Changes
+
+-   Updated dependencies [26afcdaf]
+    -   @milkdown/core@6.2.0
+    -   @milkdown/ctx@6.2.0
+    -   @milkdown/design-system@6.2.0
+    -   @milkdown/exception@6.2.0
+    -   @milkdown/plugin-clipboard@6.2.0
+    -   @milkdown/plugin-collaborative@6.2.0
+    -   @milkdown/plugin-cursor@6.2.0
+    -   @milkdown/plugin-diagram@6.2.0
+    -   @milkdown/plugin-emoji@6.2.0
+    -   @milkdown/plugin-history@6.2.0
+    -   @milkdown/plugin-indent@6.2.0
+    -   @milkdown/plugin-listener@6.2.0
+    -   @milkdown/plugin-math@6.2.0
+    -   @milkdown/plugin-menu@6.2.0
+    -   @milkdown/plugin-prism@6.2.0
+    -   @milkdown/plugin-slash@6.2.0
+    -   @milkdown/plugin-tooltip@6.2.0
+    -   @milkdown/plugin-trailing@6.2.0
+    -   @milkdown/plugin-upload@6.2.0
+    -   @milkdown/preset-commonmark@6.2.0
+    -   @milkdown/preset-gfm@6.2.0
+    -   @milkdown/prose@6.2.0
+    -   @milkdown/react@6.2.0
+    -   @milkdown/theme-nord@6.2.0
+    -   @milkdown/theme-tokyo@6.2.0
+    -   @milkdown/transformer@6.2.0
+    -   @milkdown/utils@6.2.0
+    -   @milkdown/vue@6.2.0
+
+## 6.1.5
+
+### Patch Changes
+
+-   ccf70357: Fix extended factories cannot inject slices
+-   Updated dependencies [ccf70357]
+    -   @milkdown/core@6.1.5
+    -   @milkdown/ctx@6.1.5
+    -   @milkdown/design-system@6.1.5
+    -   @milkdown/exception@6.1.5
+    -   @milkdown/plugin-clipboard@6.1.5
+    -   @milkdown/plugin-collaborative@6.1.5
+    -   @milkdown/plugin-cursor@6.1.5
+    -   @milkdown/plugin-diagram@6.1.5
+    -   @milkdown/plugin-emoji@6.1.5
+    -   @milkdown/plugin-history@6.1.5
+    -   @milkdown/plugin-indent@6.1.5
+    -   @milkdown/plugin-listener@6.1.5
+    -   @milkdown/plugin-math@6.1.5
+    -   @milkdown/plugin-menu@6.1.5
+    -   @milkdown/plugin-prism@6.1.5
+    -   @milkdown/plugin-slash@6.1.5
+    -   @milkdown/plugin-tooltip@6.1.5
+    -   @milkdown/plugin-upload@6.1.5
+    -   @milkdown/preset-commonmark@6.1.5
+    -   @milkdown/preset-gfm@6.1.5
+    -   @milkdown/prose@6.1.5
+    -   @milkdown/react@6.1.5
+    -   @milkdown/theme-nord@6.1.5
+    -   @milkdown/theme-tokyo@6.1.5
+    -   @milkdown/transformer@6.1.5
+    -   @milkdown/utils@6.1.5
+    -   @milkdown/vue@6.1.5
+
+## 6.1.4
+
+### Patch Changes
+
+-   d866dded: Fix bugs for clipboard plugin and i18 support
+-   Updated dependencies [d866dded]
+    -   @milkdown/core@6.1.4
+    -   @milkdown/ctx@6.1.4
+    -   @milkdown/design-system@6.1.4
+    -   @milkdown/exception@6.1.4
+    -   @milkdown/plugin-clipboard@6.1.4
+    -   @milkdown/plugin-collaborative@6.1.4
+    -   @milkdown/plugin-cursor@6.1.4
+    -   @milkdown/plugin-diagram@6.1.4
+    -   @milkdown/plugin-emoji@6.1.4
+    -   @milkdown/plugin-history@6.1.4
+    -   @milkdown/plugin-indent@6.1.4
+    -   @milkdown/plugin-listener@6.1.4
+    -   @milkdown/plugin-math@6.1.4
+    -   @milkdown/plugin-menu@6.1.4
+    -   @milkdown/plugin-prism@6.1.4
+    -   @milkdown/plugin-slash@6.1.4
+    -   @milkdown/plugin-tooltip@6.1.4
+    -   @milkdown/plugin-upload@6.1.4
+    -   @milkdown/preset-commonmark@6.1.4
+    -   @milkdown/preset-gfm@6.1.4
+    -   @milkdown/prose@6.1.4
+    -   @milkdown/react@6.1.4
+    -   @milkdown/theme-nord@6.1.4
+    -   @milkdown/theme-tokyo@6.1.4
+    -   @milkdown/transformer@6.1.4
+    -   @milkdown/utils@6.1.4
+    -   @milkdown/vue@6.1.4
+
+## 6.1.3
+
+### Patch Changes
+
+-   b5bb4c3f: Fix bugs: inline nodes cursor, theme & emoji for next/nuxt, hardbreak only paragraph.
+-   Updated dependencies [b5bb4c3f]
+    -   @milkdown/core@6.1.3
+    -   @milkdown/ctx@6.1.3
+    -   @milkdown/design-system@6.1.3
+    -   @milkdown/exception@6.1.3
+    -   @milkdown/plugin-clipboard@6.1.3
+    -   @milkdown/plugin-collaborative@6.1.3
+    -   @milkdown/plugin-cursor@6.1.3
+    -   @milkdown/plugin-diagram@6.1.3
+    -   @milkdown/plugin-emoji@6.1.3
+    -   @milkdown/plugin-history@6.1.3
+    -   @milkdown/plugin-indent@6.1.3
+    -   @milkdown/plugin-listener@6.1.3
+    -   @milkdown/plugin-math@6.1.3
+    -   @milkdown/plugin-menu@6.1.3
+    -   @milkdown/plugin-prism@6.1.3
+    -   @milkdown/plugin-slash@6.1.3
+    -   @milkdown/plugin-tooltip@6.1.3
+    -   @milkdown/plugin-upload@6.1.3
+    -   @milkdown/preset-commonmark@6.1.3
+    -   @milkdown/preset-gfm@6.1.3
+    -   @milkdown/prose@6.1.3
+    -   @milkdown/react@6.1.3
+    -   @milkdown/theme-nord@6.1.3
+    -   @milkdown/theme-tokyo@6.1.3
+    -   @milkdown/transformer@6.1.3
+    -   @milkdown/utils@6.1.3
+    -   @milkdown/vue@6.1.3
+
+## 6.1.2
+
+### Patch Changes
+
+-   2c651a96: Fix bugs for collab editing and theme.
+-   Updated dependencies [2c651a96]
+    -   @milkdown/core@6.1.2
+    -   @milkdown/ctx@6.1.2
+    -   @milkdown/design-system@6.1.2
+    -   @milkdown/exception@6.1.2
+    -   @milkdown/plugin-clipboard@6.1.2
+    -   @milkdown/plugin-collaborative@6.1.2
+    -   @milkdown/plugin-cursor@6.1.2
+    -   @milkdown/plugin-diagram@6.1.2
+    -   @milkdown/plugin-emoji@6.1.2
+    -   @milkdown/plugin-history@6.1.2
+    -   @milkdown/plugin-indent@6.1.2
+    -   @milkdown/plugin-listener@6.1.2
+    -   @milkdown/plugin-math@6.1.2
+    -   @milkdown/plugin-menu@6.1.2
+    -   @milkdown/plugin-prism@6.1.2
+    -   @milkdown/plugin-slash@6.1.2
+    -   @milkdown/plugin-tooltip@6.1.2
+    -   @milkdown/plugin-upload@6.1.2
+    -   @milkdown/preset-commonmark@6.1.2
+    -   @milkdown/preset-gfm@6.1.2
+    -   @milkdown/prose@6.1.2
+    -   @milkdown/react@6.1.2
+    -   @milkdown/theme-nord@6.1.2
+    -   @milkdown/theme-tokyo@6.1.2
+    -   @milkdown/transformer@6.1.2
+    -   @milkdown/utils@6.1.2
+    -   @milkdown/vue@6.1.2
+
+## 6.1.1
+
+### Patch Changes
+
+-   1b52931a: Fix input chip bug
+-   Updated dependencies [1b52931a]
+    -   @milkdown/core@6.1.1
+    -   @milkdown/ctx@6.1.1
+    -   @milkdown/design-system@6.1.1
+    -   @milkdown/exception@6.1.1
+    -   @milkdown/plugin-clipboard@6.1.1
+    -   @milkdown/plugin-collaborative@6.1.1
+    -   @milkdown/plugin-cursor@6.1.1
+    -   @milkdown/plugin-diagram@6.1.1
+    -   @milkdown/plugin-emoji@6.1.1
+    -   @milkdown/plugin-history@6.1.1
+    -   @milkdown/plugin-indent@6.1.1
+    -   @milkdown/plugin-listener@6.1.1
+    -   @milkdown/plugin-math@6.1.1
+    -   @milkdown/plugin-menu@6.1.1
+    -   @milkdown/plugin-prism@6.1.1
+    -   @milkdown/plugin-slash@6.1.1
+    -   @milkdown/plugin-tooltip@6.1.1
+    -   @milkdown/plugin-upload@6.1.1
+    -   @milkdown/preset-commonmark@6.1.1
+    -   @milkdown/preset-gfm@6.1.1
+    -   @milkdown/prose@6.1.1
+    -   @milkdown/react@6.1.1
+    -   @milkdown/theme-nord@6.1.1
+    -   @milkdown/theme-tokyo@6.1.1
+    -   @milkdown/transformer@6.1.1
+    -   @milkdown/utils@6.1.1
+    -   @milkdown/vue@6.1.1
+
+## 6.1.0
+
+### Minor Changes
+
+-   1daf87dd: Improve support for collaborative editing.
+
+### Patch Changes
+
+-   Updated dependencies [1daf87dd]
+    -   @milkdown/core@6.1.0
+    -   @milkdown/ctx@6.1.0
+    -   @milkdown/design-system@6.1.0
+    -   @milkdown/exception@6.1.0
+    -   @milkdown/plugin-clipboard@6.1.0
+    -   @milkdown/plugin-collaborative@6.1.0
+    -   @milkdown/plugin-cursor@6.1.0
+    -   @milkdown/plugin-diagram@6.1.0
+    -   @milkdown/plugin-emoji@6.1.0
+    -   @milkdown/plugin-history@6.1.0
+    -   @milkdown/plugin-indent@6.1.0
+    -   @milkdown/plugin-listener@6.1.0
+    -   @milkdown/plugin-math@6.1.0
+    -   @milkdown/plugin-menu@6.1.0
+    -   @milkdown/plugin-prism@6.1.0
+    -   @milkdown/plugin-slash@6.1.0
+    -   @milkdown/plugin-tooltip@6.1.0
+    -   @milkdown/plugin-upload@6.1.0
+    -   @milkdown/preset-commonmark@6.1.0
+    -   @milkdown/preset-gfm@6.1.0
+    -   @milkdown/prose@6.1.0
+    -   @milkdown/react@6.1.0
+    -   @milkdown/theme-nord@6.1.0
+    -   @milkdown/theme-tokyo@6.1.0
+    -   @milkdown/transformer@6.1.0
+    -   @milkdown/utils@6.1.0
+    -   @milkdown/vue@6.1.0
+
+## 6.0.2
+
+### Patch Changes
+
+-   e956c5e3: Fix bugs for collaboration mode
+-   Updated dependencies [e956c5e3]
+    -   @milkdown/core@6.0.2
+    -   @milkdown/ctx@6.0.2
+    -   @milkdown/design-system@6.0.2
+    -   @milkdown/exception@6.0.2
+    -   @milkdown/plugin-clipboard@6.0.2
+    -   @milkdown/plugin-collaborative@6.0.2
+    -   @milkdown/plugin-cursor@6.0.2
+    -   @milkdown/plugin-diagram@6.0.2
+    -   @milkdown/plugin-emoji@6.0.2
+    -   @milkdown/plugin-history@6.0.2
+    -   @milkdown/plugin-indent@6.0.2
+    -   @milkdown/plugin-listener@6.0.2
+    -   @milkdown/plugin-math@6.0.2
+    -   @milkdown/plugin-menu@6.0.2
+    -   @milkdown/plugin-prism@6.0.2
+    -   @milkdown/plugin-slash@6.0.2
+    -   @milkdown/plugin-tooltip@6.0.2
+    -   @milkdown/plugin-upload@6.0.2
+    -   @milkdown/preset-commonmark@6.0.2
+    -   @milkdown/preset-gfm@6.0.2
+    -   @milkdown/prose@6.0.2
+    -   @milkdown/react@6.0.2
+    -   @milkdown/theme-nord@6.0.2
+    -   @milkdown/theme-tokyo@6.0.2
+    -   @milkdown/transformer@6.0.2
+    -   @milkdown/utils@6.0.2
+    -   @milkdown/vue@6.0.2
+
+## 6.0.1
+
+### Patch Changes
+
+-   08a442de: Fix peer dependency error
+-   Updated dependencies [08a442de]
+    -   @milkdown/core@6.0.1
+    -   @milkdown/ctx@6.0.1
+    -   @milkdown/design-system@6.0.1
+    -   @milkdown/exception@6.0.1
+    -   @milkdown/plugin-clipboard@6.0.1
+    -   @milkdown/plugin-collaborative@6.0.1
+    -   @milkdown/plugin-cursor@6.0.1
+    -   @milkdown/plugin-diagram@6.0.1
+    -   @milkdown/plugin-emoji@6.0.1
+    -   @milkdown/plugin-history@6.0.1
+    -   @milkdown/plugin-indent@6.0.1
+    -   @milkdown/plugin-listener@6.0.1
+    -   @milkdown/plugin-math@6.0.1
+    -   @milkdown/plugin-menu@6.0.1
+    -   @milkdown/plugin-prism@6.0.1
+    -   @milkdown/plugin-slash@6.0.1
+    -   @milkdown/plugin-tooltip@6.0.1
+    -   @milkdown/plugin-upload@6.0.1
+    -   @milkdown/preset-commonmark@6.0.1
+    -   @milkdown/preset-gfm@6.0.1
+    -   @milkdown/prose@6.0.1
+    -   @milkdown/react@6.0.1
+    -   @milkdown/theme-nord@6.0.1
+    -   @milkdown/theme-tokyo@6.0.1
+    -   @milkdown/transformer@6.0.1
+    -   @milkdown/utils@6.0.1
+    -   @milkdown/vue@6.0.1
+
+## 6.0.0
+
+### Major Changes
+
+-   00dcdee9: Release milkdown@6
+-   4c2846d5: Release milkdown@v6 next.
+
+### Patch Changes
+
+-   e27e7e62: Improve UX and API.
+-   Updated dependencies [e27e7e62]
+-   Updated dependencies [00dcdee9]
+-   Updated dependencies [4c2846d5]
+    -   @milkdown/core@6.0.0
+    -   @milkdown/ctx@6.0.0
+    -   @milkdown/design-system@6.0.0
+    -   @milkdown/exception@6.0.0
+    -   @milkdown/plugin-clipboard@6.0.0
+    -   @milkdown/plugin-collaborative@6.0.0
+    -   @milkdown/plugin-cursor@6.0.0
+    -   @milkdown/plugin-diagram@6.0.0
+    -   @milkdown/plugin-emoji@6.0.0
+    -   @milkdown/plugin-history@6.0.0
+    -   @milkdown/plugin-indent@6.0.0
+    -   @milkdown/plugin-listener@6.0.0
+    -   @milkdown/plugin-math@6.0.0
+    -   @milkdown/plugin-menu@6.0.0
+    -   @milkdown/plugin-prism@6.0.0
+    -   @milkdown/plugin-slash@6.0.0
+    -   @milkdown/plugin-tooltip@6.0.0
+    -   @milkdown/plugin-upload@6.0.0
+    -   @milkdown/preset-commonmark@6.0.0
+    -   @milkdown/preset-gfm@6.0.0
+    -   @milkdown/prose@6.0.0
+    -   @milkdown/react@6.0.0
+    -   @milkdown/theme-nord@6.0.0
+    -   @milkdown/theme-tokyo@6.0.0
+    -   @milkdown/transformer@6.0.0
+    -   @milkdown/utils@6.0.0
+    -   @milkdown/vue@6.0.0
+
+## 6.0.0-next.1
+
+### Patch Changes
+
+-   e27e7e62: Improve UX and API.
+-   Updated dependencies [e27e7e62]
+    -   @milkdown/core@6.0.0-next.1
+    -   @milkdown/ctx@6.0.0-next.1
+    -   @milkdown/design-system@6.0.0-next.1
+    -   @milkdown/exception@6.0.0-next.1
+    -   @milkdown/plugin-clipboard@6.0.0-next.1
+    -   @milkdown/plugin-collaborative@6.0.0-next.1
+    -   @milkdown/plugin-cursor@6.0.0-next.1
+    -   @milkdown/plugin-diagram@6.0.0-next.1
+    -   @milkdown/plugin-emoji@6.0.0-next.1
+    -   @milkdown/plugin-history@6.0.0-next.1
+    -   @milkdown/plugin-indent@6.0.0-next.1
+    -   @milkdown/plugin-listener@6.0.0-next.1
+    -   @milkdown/plugin-math@6.0.0-next.1
+    -   @milkdown/plugin-menu@6.0.0-next.1
+    -   @milkdown/plugin-prism@6.0.0-next.1
+    -   @milkdown/plugin-slash@6.0.0-next.1
+    -   @milkdown/plugin-tooltip@6.0.0-next.1
+    -   @milkdown/plugin-upload@6.0.0-next.1
+    -   @milkdown/preset-commonmark@6.0.0-next.1
+    -   @milkdown/preset-gfm@6.0.0-next.1
+    -   @milkdown/prose@6.0.0-next.1
+    -   @milkdown/react@6.0.0-next.1
+    -   @milkdown/theme-nord@6.0.0-next.1
+    -   @milkdown/theme-tokyo@6.0.0-next.1
+    -   @milkdown/transformer@6.0.0-next.1
+    -   @milkdown/utils@6.0.0-next.1
+    -   @milkdown/vue@6.0.0-next.1
+
 ## 6.0.0-next.0
 
 ### Major Changes

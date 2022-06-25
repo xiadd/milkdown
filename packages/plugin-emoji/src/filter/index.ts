@@ -1,13 +1,14 @@
 /* Copyright 2021, Milkdown by Mirone. */
 
-import { calculateNodePosition, Plugin, PluginKey } from '@milkdown/prose';
+import { calculateNodePosition } from '@milkdown/prose';
+import { Plugin, PluginKey } from '@milkdown/prose/state';
 import { Utils } from '@milkdown/utils';
-import { search } from 'node-emoji';
+import nodeEmoji from 'node-emoji';
 
 import { checkTrigger, renderDropdownList } from './helper';
 import { injectStyle } from './style';
 
-export const key = new PluginKey('MILKDOWN_PLUGIN_EMOJI_FILTER');
+export const key = new PluginKey('MILKDOWN_EMOJI_FILTER');
 
 export const filter = (utils: Utils, maxListSize: number) => {
     let trigger = false;
@@ -66,14 +67,18 @@ export const filter = (utils: Utils, maxListSize: number) => {
 
             const dropDown = document.createElement('div');
 
+            dropDown.classList.add('milkdown-emoji-filter', 'hide');
+
             utils.themeManager.onFlush(() => {
-                const style = utils.getStyle(injectStyle);
+                const className = dropDown.className
+                    .split(' ')
+                    .filter((x) => ['hide', 'milkdown-emoji-filter'].includes(x));
+                dropDown.className = className.join(' ');
+                const style = utils.getStyle((emotion) => injectStyle(utils.themeManager, emotion));
                 if (style) {
                     style.split(' ').forEach((x) => dropDown.classList.add(x));
                 }
             });
-
-            dropDown.classList.add('milkdown-emoji-filter', 'hide');
 
             const replace = () => {
                 if (!$active) return;
@@ -131,7 +136,7 @@ export const filter = (utils: Utils, maxListSize: number) => {
                         dropDown.classList.add('hide');
                         return null;
                     }
-                    const result = search(_search).slice(0, maxListSize);
+                    const result = nodeEmoji.search(_search).slice(0, maxListSize);
                     const { node } = view.domAtPos(_from);
                     if (result.length === 0 || !node) {
                         dropDown.classList.add('hide');

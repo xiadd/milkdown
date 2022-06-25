@@ -1,6 +1,8 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import type { ThemeInnerEditorType } from '@milkdown/core';
-import { InputRule, NodeSelection } from '@milkdown/prose';
+import { InputRule } from '@milkdown/prose/inputrules';
+import { NodeSelection } from '@milkdown/prose/state';
+import { NodeView } from '@milkdown/prose/view';
 import { createNode } from '@milkdown/utils';
 import katex from 'katex';
 
@@ -102,7 +104,7 @@ export const mathBlock = createNode<string, Options>((utils, options) => {
                     }
                 },
             });
-            if (!renderer) return {};
+            if (!renderer) return {} as NodeView;
 
             const { onUpdate, editor, dom, onFocus, onBlur, onDestroy, stopEvent } = renderer;
             dom.classList.add('math-block');

@@ -4,7 +4,7 @@ import { createContainer, createSlice, Ctx, MilkdownPlugin, Pre, Slice } from '@
 
 import { emotionCtx } from './emotion';
 
-export type ThemeSlice<Ret = unknown, T = undefined> = (info: T) => Ret | undefined;
+export type ThemeSlice<Ret = unknown, T = undefined> = (payload: T) => Ret | undefined;
 export type ThemeSliceKey<Ret = unknown, T = undefined, K extends string = string> = Slice<ThemeSlice<Ret, T>, K>;
 
 export const createThemeSliceKey = <Ret, T = undefined, K extends string = string>(key: K): ThemeSliceKey<Ret, T, K> =>
@@ -20,10 +20,24 @@ type GetKey<Key extends ThemeSliceKey> = Key extends ThemeSliceKey<any, any, inf
 export class ThemeManager {
     #container = createContainer();
     #cache: Map<string, ThemeSlice> = new Map();
-    #flushListener: Array<() => void> = [];
+    #flushListener: Set<() => void> = new Set();
+    #executor: () => void = () => {
+        /* noop */
+    };
 
     inject<Ret = unknown, T = undefined>(key: ThemeSliceKey<Ret, T>): void {
         key(this.#container.sliceMap);
+    }
+
+    has(key: ThemeSliceKey | string): boolean {
+        const name = typeof key === 'string' ? key : key.sliceName;
+        if (this.#cache.has(name)) {
+            return true;
+        }
+
+        const meta = this.#container.getSlice(key);
+
+        return meta.get()(null as never) != null;
     }
 
     set<
@@ -59,7 +73,9 @@ export class ThemeManager {
     }
 
     onFlush(fn: () => void, callWhenRegister = true): void {
-        this.#flushListener.push(fn);
+        if (!this.#flushListener.has(fn)) {
+            this.#flushListener.add(fn);
+        }
         if (callWhenRegister) {
             fn();
         }
@@ -69,7 +85,24 @@ export class ThemeManager {
         const emotion = ctx.get(emotionCtx);
         emotion.flush();
         await theme(ctx as unknown as Pre)(ctx);
+        this.runExecutor();
         this.#flushListener.forEach((f) => f());
+    }
+
+    flush(ctx: Ctx) {
+        const emotion = ctx.get(emotionCtx);
+        emotion.flush();
+        this.runExecutor();
+        this.#flushListener.forEach((f) => f());
+    }
+
+    setExecutor(executor: () => void): void {
+        executor();
+        this.#executor = executor;
+    }
+
+    runExecutor(): void {
+        this.#executor();
     }
 }
 

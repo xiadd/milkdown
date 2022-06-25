@@ -1,6 +1,9 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { createCmd, createCmdKey, editorViewCtx, ThemeTaskListItemType } from '@milkdown/core';
-import { liftListItem, sinkListItem, splitListItem, wrapIn, wrappingInputRule } from '@milkdown/prose';
+import { wrapIn } from '@milkdown/prose/commands';
+import { wrappingInputRule } from '@milkdown/prose/inputrules';
+import { liftListItem, sinkListItem, splitListItem } from '@milkdown/prose/schema-list';
+import { NodeView } from '@milkdown/prose/view';
 import { createNode, createShortcut } from '@milkdown/utils';
 
 import { SupportedKeys } from './supported-keys';
@@ -128,7 +131,7 @@ export const taskListItem = createNode<Keys>((utils) => {
                 },
             });
 
-            if (!renderer) return {};
+            if (!renderer) return {} as NodeView;
 
             const { dom, contentDOM, onUpdate } = renderer;
             onUpdate(currNode);

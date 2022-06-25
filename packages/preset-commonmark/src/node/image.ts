@@ -1,6 +1,9 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { commandsCtx, createCmd, createCmdKey, ThemeImageType, ThemeInputChipType } from '@milkdown/core';
-import { EditorView, findSelectedNodeOfType, InputRule, Plugin, PluginKey } from '@milkdown/prose';
+import { findSelectedNodeOfType } from '@milkdown/prose';
+import { InputRule } from '@milkdown/prose/inputrules';
+import { Plugin, PluginKey } from '@milkdown/prose/state';
+import { EditorView, NodeView } from '@milkdown/prose/view';
 import { createNode } from '@milkdown/utils';
 
 export const ModifyImage = createCmdKey<string>('ModifyImage');
@@ -14,7 +17,7 @@ export type ImageOptions = {
         buttonText?: string;
     };
 };
-const key = new PluginKey('MILKDOWN_PLUGIN_IMAGE_INPUT');
+const key = new PluginKey('MILKDOWN_IMAGE_INPUT');
 
 export const image = createNode<string, ImageOptions>((utils, options) => {
     return {
@@ -131,7 +134,7 @@ export const image = createNode<string, ImageOptions>((utils, options) => {
             });
 
             if (!renderer) {
-                return {};
+                return {} as NodeView;
             }
 
             const { dom, onUpdate } = renderer;
@@ -156,39 +159,42 @@ export const image = createNode<string, ImageOptions>((utils, options) => {
             };
         },
         prosePlugins: (type, ctx) => {
-            const inputChipRenderer = utils.themeManager.get<ThemeInputChipType>('input-chip', {
-                placeholder: options?.input?.placeholder ?? 'Input Image Link',
-                buttonText: options?.input?.buttonText,
-                onUpdate: (value) => {
-                    ctx.get(commandsCtx).call(ModifyImage, value);
-                },
-            });
-            const shouldDisplay = (view: EditorView) => {
-                return Boolean(type && findSelectedNodeOfType(view.state.selection, type));
-            };
-            const getCurrentLink = (view: EditorView) => {
-                const result = findSelectedNodeOfType(view.state.selection, type);
-                if (!result) return;
-
-                const value = result.node.attrs['src'];
-                return value;
-            };
-            const renderByView = (view: EditorView) => {
-                if (!view.editable) {
-                    return;
-                }
-                const display = shouldDisplay(view);
-                if (display) {
-                    inputChipRenderer.show(view);
-                    inputChipRenderer.update(getCurrentLink(view));
-                } else {
-                    inputChipRenderer.hide();
-                }
-            };
             return [
                 new Plugin({
                     key,
                     view: (editorView) => {
+                        const inputChipRenderer = utils.themeManager.get<ThemeInputChipType>('input-chip', {
+                            placeholder: options?.input?.placeholder ?? 'Input Image Link',
+                            buttonText: options?.input?.buttonText,
+                            onUpdate: (value) => {
+                                ctx.get(commandsCtx).call(ModifyImage, value);
+                            },
+                        });
+                        if (!inputChipRenderer) return {};
+                        const shouldDisplay = (view: EditorView) => {
+                            return Boolean(
+                                view.hasFocus() && type && findSelectedNodeOfType(view.state.selection, type),
+                            );
+                        };
+                        const getCurrentLink = (view: EditorView) => {
+                            const result = findSelectedNodeOfType(view.state.selection, type);
+                            if (!result) return;
+
+                            const value = result.node.attrs['src'];
+                            return value;
+                        };
+                        const renderByView = (view: EditorView) => {
+                            if (!view.editable) {
+                                return;
+                            }
+                            const display = shouldDisplay(view);
+                            if (display) {
+                                inputChipRenderer.show(view);
+                                inputChipRenderer.update(getCurrentLink(view));
+                            } else {
+                                inputChipRenderer.hide();
+                            }
+                        };
                         inputChipRenderer.init(editorView);
                         renderByView(editorView);
 

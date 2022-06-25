@@ -8,9 +8,10 @@ import {
     ThemeShadow,
     ThemeSize,
 } from '@milkdown/core';
-import { calculateTextPosition, EditorView } from '@milkdown/prose';
+import { calculateTextPosition } from '@milkdown/prose';
+import { EditorView } from '@milkdown/prose/view';
 
-const getStyle = (manager: ThemeManager, { css }: Emotion) => {
+const getStyle = (manager: ThemeManager, { css }: Emotion, options: { width: string }) => {
     const palette = getPalette(manager);
     return css`
         ${manager.get(ThemeBorder, undefined)}
@@ -26,7 +27,7 @@ const getStyle = (manager: ThemeManager, { css }: Emotion) => {
 
         height: 3.5em;
         box-sizing: border-box;
-        width: 25.5em;
+        width: ${options.width};
         padding: 0 1em;
         gap: 1em;
         z-index: 2;
@@ -93,14 +94,14 @@ const calcInputPos = (view: EditorView, input: HTMLDivElement) => {
 export const inputChip = (manager: ThemeManager, emotion: Emotion) => {
     manager.set<ThemeInputChipType>(
         'input-chip',
-        ({ isBindMode, onUpdate, buttonText, placeholder, calculatePosition = calcInputPos }) => {
+        ({ isBindMode, onUpdate, buttonText, placeholder, width = '25em', calculatePosition = calcInputPos }) => {
             let button: HTMLButtonElement | null = null;
             let disabled = false;
             let value = '';
             const wrapper = document.createElement('div');
 
             manager.onFlush(() => {
-                const style = getStyle(manager, emotion);
+                const style = getStyle(manager, emotion, { width });
 
                 if (style) {
                     wrapper.classList.add(style);

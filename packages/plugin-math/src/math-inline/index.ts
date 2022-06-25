@@ -1,7 +1,10 @@
 /* Copyright 2021, Milkdown by Mirone. */
 
 import { Color, commandsCtx, createCmd, createCmdKey, ThemeColor, ThemeInputChipType, ThemeSize } from '@milkdown/core';
-import { EditorView, findSelectedNodeOfType, InputRule, NodeSelection, Plugin, PluginKey } from '@milkdown/prose';
+import { findSelectedNodeOfType } from '@milkdown/prose';
+import { InputRule } from '@milkdown/prose/inputrules';
+import { NodeSelection, Plugin, PluginKey } from '@milkdown/prose/state';
+import { EditorView } from '@milkdown/prose/view';
 import { createNode } from '@milkdown/utils';
 import katex from 'katex';
 
@@ -10,9 +13,12 @@ type Options = {
         empty: string;
         error: string;
     };
+    input: {
+        placeholder: string;
+    };
 };
 
-const key = new PluginKey('MILKDOWN_PLUGIN_MATH_INPUT');
+const key = new PluginKey('MILKDOWN_MATH_INPUT');
 
 export const ModifyInlineMath = createCmdKey<string>('ModifyInlineMath');
 export const mathInline = createNode<string, Options>((utils, options) => {
@@ -21,8 +27,10 @@ export const mathInline = createNode<string, Options>((utils, options) => {
         error: '(error)',
         ...(options?.placeholder ?? {}),
     };
+    const inputPlaceholder = options?.input?.placeholder ?? 'Input Math';
+    const themeManager = utils.themeManager;
     const getStyle = () =>
-        utils.getStyle((themeManager, { css }) => {
+        utils.getStyle(({ css }) => {
             const palette = (color: Color, opacity = 1) => themeManager.get(ThemeColor, [color, opacity]);
             const lineWidth = themeManager.get(ThemeSize, 'lineWidth');
             return css`
@@ -105,7 +113,7 @@ export const mathInline = createNode<string, Options>((utils, options) => {
                 const style = getStyle();
 
                 if (style) {
-                    dom.classList.add(style);
+                    dom.className = style;
                 }
             });
             const render = (code: string) => {
@@ -142,7 +150,7 @@ export const mathInline = createNode<string, Options>((utils, options) => {
                 if (!$start.parent.canReplaceWith(index, $end.index(), nodeType)) {
                     return null;
                 }
-                const value = match[1];
+                const value = match[1] ?? '';
                 return state.tr.replaceRangeWith(
                     start,
                     end,
@@ -156,39 +164,40 @@ export const mathInline = createNode<string, Options>((utils, options) => {
             }),
         ],
         prosePlugins: (type, ctx) => {
-            const inputChipRenderer = utils.themeManager.get<ThemeInputChipType>('input-chip', {
-                placeholder: 'Input Math',
-                onUpdate: (value) => {
-                    ctx.get(commandsCtx).call(ModifyInlineMath, value);
-                },
-                isBindMode: true,
-            });
-            const shouldDisplay = (view: EditorView) => {
-                return Boolean(type && findSelectedNodeOfType(view.state.selection, type));
-            };
-            const getCurrentLink = (view: EditorView) => {
-                const result = findSelectedNodeOfType(view.state.selection, type);
-                if (!result) return;
-
-                const value = result.node.attrs['value'];
-                return value;
-            };
-            const renderByView = (view: EditorView) => {
-                if (!view.editable) {
-                    return;
-                }
-                const display = shouldDisplay(view);
-                if (display) {
-                    inputChipRenderer.show(view);
-                    inputChipRenderer.update(getCurrentLink(view));
-                } else {
-                    inputChipRenderer.hide();
-                }
-            };
             return [
                 new Plugin({
                     key,
                     view: (editorView) => {
+                        const inputChipRenderer = utils.themeManager.get<ThemeInputChipType>('input-chip', {
+                            placeholder: inputPlaceholder,
+                            onUpdate: (value) => {
+                                ctx.get(commandsCtx).call(ModifyInlineMath, value);
+                            },
+                            isBindMode: true,
+                        });
+                        if (!inputChipRenderer) return {};
+                        const shouldDisplay = (view: EditorView) => {
+                            return Boolean(type && findSelectedNodeOfType(view.state.selection, type));
+                        };
+                        const getCurrentLink = (view: EditorView) => {
+                            const result = findSelectedNodeOfType(view.state.selection, type);
+                            if (!result) return;
+
+                            const value = result.node.attrs['value'];
+                            return value;
+                        };
+                        const renderByView = (view: EditorView) => {
+                            if (!view.editable) {
+                                return;
+                            }
+                            const display = shouldDisplay(view);
+                            if (display) {
+                                inputChipRenderer.show(view);
+                                inputChipRenderer.update(getCurrentLink(view));
+                            } else {
+                                inputChipRenderer.hide();
+                            }
+                        };
                         inputChipRenderer.init(editorView);
                         renderByView(editorView);
 

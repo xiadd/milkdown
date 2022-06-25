@@ -1,11 +1,22 @@
 /* Copyright 2021, Milkdown by Mirone. */
-import type { Attrs, CmdKey, Emotion, MilkdownPlugin, ThemeManager } from '@milkdown/core';
-import { CmdTuple, Ctx, RemarkPlugin } from '@milkdown/core';
-import { InputRule, Plugin, ViewFactory } from '@milkdown/prose';
+import type {
+    Attrs,
+    CmdKey,
+    CmdTuple,
+    Ctx,
+    Emotion,
+    MilkdownPlugin,
+    RemarkPlugin,
+    Slice,
+    ThemeManager,
+} from '@milkdown/core';
+import type { InputRule } from '@milkdown/prose/inputrules';
+import type { Plugin } from '@milkdown/prose/state';
+import type { MarkViewConstructor, NodeViewConstructor } from '@milkdown/prose/view';
 
 export type Utils = {
     readonly getClassName: (attrs: Attrs, ...defaultValue: (string | null | undefined)[]) => string;
-    readonly getStyle: (style: (themeManager: ThemeManager, emotion: Emotion) => string | void) => string | undefined;
+    readonly getStyle: (style: (emotion: Emotion) => string | void) => string | undefined;
     readonly themeManager: ThemeManager;
 };
 
@@ -14,10 +25,10 @@ export type UnknownRecord = Record<string, unknown>;
 export type CommandConfig<T = unknown> = [commandKey: CmdKey<T>, defaultKey: string, args?: T];
 
 export type CommonOptions<SupportedKeys extends string = string, Obj = UnknownRecord> = Obj & {
-    className?: (attrs: Attrs) => string;
+    className?: (attrs: Attrs, ...defaultValue: (string | null | undefined)[]) => string;
     keymap?: Partial<Record<SupportedKeys, string | string[]>>;
     headless?: boolean;
-    view?: (ctx: Ctx) => ViewFactory;
+    view?: (ctx: Ctx) => NodeViewConstructor | MarkViewConstructor;
 };
 
 export type Methods<Keys extends string, Type> = {
@@ -44,10 +55,7 @@ export type Factory<SupportedKeys extends string, Options extends UnknownRecord,
     utils: Utils,
     options?: Partial<CommonOptions<SupportedKeys, Options>>,
 ) => Spec<SupportedKeys, Type, Rest>;
-export type WithExtend<SupportedKeys extends string, Options extends UnknownRecord, Type, Rest> = AddMetadata<
-    SupportedKeys,
-    Options
-> & {
+export type Extendable<SupportedKeys extends string, Options extends UnknownRecord, Type, Rest> = {
     extend: <
         ExtendedSupportedKeys extends string = SupportedKeys,
         ExtendedOptions extends UnknownRecord = Options,
@@ -57,8 +65,17 @@ export type WithExtend<SupportedKeys extends string, Options extends UnknownReco
         extendFactory: (
             ...args: [
                 original: Spec<SupportedKeys, Type, Rest>,
-                ...rest: Parameters<Factory<ExtendedSupportedKeys, ExtendedOptions, ExtendedType, ExtendedRest>>
+                ...rest: Parameters<Factory<ExtendedSupportedKeys, ExtendedOptions, ExtendedType, ExtendedRest>>,
             ]
         ) => Spec<ExtendedSupportedKeys, ExtendedType, ExtendedRest>,
-    ) => AddMetadata<ExtendedSupportedKeys, ExtendedOptions>;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        inject?: Slice<any>[],
+    ) => WithExtend<ExtendedSupportedKeys, ExtendedOptions, Type, Rest>;
 };
+export type WithExtend<SupportedKeys extends string, Options extends UnknownRecord, Type, Rest> = AddMetadata<
+    SupportedKeys,
+    Options
+> &
+    Extendable<SupportedKeys, Options, Type, Rest>;
+
+export type MaybePromise<T> = T | Promise<T>;

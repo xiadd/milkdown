@@ -1,6 +1,9 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { createCmd, createCmdKey, editorViewCtx, ThemeCodeFenceType } from '@milkdown/core';
-import { setBlockType, textblockTypeInputRule } from '@milkdown/prose';
+import { setBlockType } from '@milkdown/prose/commands';
+import { textblockTypeInputRule } from '@milkdown/prose/inputrules';
+import { Fragment } from '@milkdown/prose/model';
+import { NodeView } from '@milkdown/prose/view';
 import { createNode, createShortcut } from '@milkdown/utils';
 
 import { SupportedKeys } from '../supported-keys';
@@ -52,6 +55,23 @@ export const codeFence = createNode<Keys, { languageList?: string[] }>((utils, o
                 },
             },
             parseDOM: [
+                {
+                    tag: 'div.code-fence-container',
+                    preserveWhitespace: 'full',
+                    getAttrs: (dom) => {
+                        if (!(dom instanceof HTMLElement)) {
+                            throw new Error('Parse DOM error.');
+                        }
+                        return { language: dom.querySelector('pre')?.dataset['language'] };
+                    },
+                    getContent: (dom, schema) => {
+                        if (!(dom instanceof HTMLElement)) {
+                            throw new Error('Parse DOM error.');
+                        }
+                        const textNode = schema.text(dom.querySelector('pre')?.textContent ?? '');
+                        return Fragment.from(textNode);
+                    },
+                },
                 {
                     tag: 'pre',
                     preserveWhitespace: 'full',
@@ -191,7 +211,7 @@ export const codeFence = createNode<Keys, { languageList?: string[] }>((utils, o
                 editable: () => view.editable,
                 languageList,
             });
-            if (!renderer) return {};
+            if (!renderer) return {} as NodeView;
 
             const { dom, contentDOM, onUpdate, onDestroy } = renderer;
             onUpdate(currNode);

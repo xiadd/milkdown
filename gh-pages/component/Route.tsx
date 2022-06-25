@@ -1,35 +1,36 @@
 /* Copyright 2021, Milkdown by Mirone. */
-import React from 'react';
+import { FC, lazy, ReactNode, Suspense, useContext, useEffect, useMemo } from 'react';
+import { Helmet } from 'react-helmet';
 import { Route, Routes } from 'react-router-dom';
 import Loader from 'react-spinners/PuffLoader';
 
-import { editorModeCtx, isDarkModeCtx, sectionsCtx, setScrolledCtx } from './Context';
+import { editorModeCtx, isDarkModeCtx, localCtx, sectionsCtx, setScrolledCtx } from './Context';
 import { Footer } from './Footer';
 import { Home } from './Home';
 import { LocationType, useLocationType } from './hooks/useLocationType';
 import { useRoot } from './hooks/useRoot';
 import className from './style.module.css';
 
-const Editor = React.lazy(() =>
-    import('./MilkdownEditor/MilkdownEditor').then((module) => ({ default: module.MilkdownEditor })),
+const DocRenderer = lazy(() =>
+    import('./MilkdownEditor/DocRenderer').then((module) => ({ default: module.DocRenderer })),
 );
-const Demo = React.lazy(() => import('./Demo/Demo').then((module) => ({ default: module.Demo })));
+const Demo = lazy(() => import('./Demo/Demo').then((module) => ({ default: module.Demo })));
 
-const Loading: React.FC = ({ children }) => (
-    <React.Suspense
+const Loading: FC<{ children: ReactNode }> = ({ children }) => (
+    <Suspense
         fallback={
-            <div className={className.loading}>
+            <div className={className['loading']}>
                 <Loader color={'rgba(var(--primary), 1)'} loading size={150} />
             </div>
         }
     >
         {children}
-    </React.Suspense>
+    </Suspense>
 );
 
 const useScroll = () => {
-    const setScrolled = React.useContext(setScrolledCtx);
-    React.useEffect(() => {
+    const setScrolled = useContext(setScrolledCtx);
+    useEffect(() => {
         const scroll = () => {
             setScrolled(window.pageYOffset > 0);
         };
@@ -42,23 +43,40 @@ const useScroll = () => {
     }, [setScrolled]);
 };
 
-export const Main: React.FC = () => {
-    const [locationType] = useLocationType();
-    const editorMode = React.useContext(editorModeCtx);
-    const isDarkMode = React.useContext(isDarkModeCtx);
-    const sections = React.useContext(sectionsCtx);
+export const Main: FC = () => {
+    const [locationType, location] = useLocationType();
+    const editorMode = useContext(editorModeCtx);
+    const isDarkMode = useContext(isDarkModeCtx);
+    const local = useContext(localCtx);
+    const sections = useContext(sectionsCtx);
 
-    const classes = [className.container, locationType === LocationType.Home ? className.homepage : ''].join(' ');
+    const classes = useMemo(
+        () => [className['container'], locationType === LocationType.Home ? className['homepage'] : ''].join(' '),
+        [locationType],
+    );
 
     useScroll();
 
-    const pages = sections.flatMap((section) => section.items);
+    const pages = useMemo(() => sections.flatMap((section) => section.items), [sections]);
 
     const root = useRoot();
 
+    const title = useMemo(() => {
+        const page = pages.find((page) => page.link === location.pathname);
+        return page
+            ? `Milkdown | ${page.title}`
+            : location.pathname.includes('online-demo')
+            ? 'Milkdown | Demo'
+            : 'Milkdown';
+    }, [location.pathname, pages]);
+
     return (
         <div className={classes}>
-            <article>
+            <Helmet>
+                <html lang={local} />
+                <title>{title}</title>
+            </Helmet>
+            <div className={className['content']}>
                 <Routes>
                     {pages.map((page, i) => (
                         <Route
@@ -66,7 +84,7 @@ export const Main: React.FC = () => {
                             path={page.link}
                             element={
                                 <Loading>
-                                    <Editor content={page.content} readOnly />
+                                    <DocRenderer content={page.content} />
                                 </Loading>
                             }
                         />
@@ -90,7 +108,7 @@ export const Main: React.FC = () => {
                         }
                     />
                 </Routes>
-            </article>
+            </div>
             <Footer />
         </div>
     );

@@ -1,10 +1,11 @@
 /* Copyright 2021, Milkdown by Mirone. */
-import reactRefresh from '@vitejs/plugin-react-refresh';
+import react from '@vitejs/plugin-react';
 import path from 'path';
 import copy from 'rollup-plugin-copy';
 import { defineConfig } from 'vite';
 
-import { markdownPlugin } from './markdown-plugin';
+import { markdownPlugin } from './vite-plugins/markdown-plugin';
+import { sitemapPlugin } from './vite-plugins/sitemap-plugin';
 
 export default defineConfig({
     build: {
@@ -18,8 +19,9 @@ export default defineConfig({
         },
     },
     plugins: [
+        sitemapPlugin(),
         markdownPlugin(),
-        reactRefresh(),
+        react(),
         copy({
             targets: [
                 {

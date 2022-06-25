@@ -1,6 +1,9 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { createCmd, createCmdKey, ThemeInnerEditorType, themeManagerCtx } from '@milkdown/core';
-import { InputRule, NodeSelection, setBlockType } from '@milkdown/prose';
+import { setBlockType } from '@milkdown/prose/commands';
+import { InputRule } from '@milkdown/prose/inputrules';
+import { NodeSelection } from '@milkdown/prose/state';
+import { NodeView } from '@milkdown/prose/view';
 import { createNode } from '@milkdown/utils';
 import mermaid from 'mermaid';
 // eslint-disable-next-line import/no-unresolved
@@ -135,7 +138,7 @@ export const diagramNode = createNode<string, Options>((utils, options) => {
                 },
             });
 
-            if (!renderer) return {};
+            if (!renderer) return {} as NodeView;
 
             const { onUpdate, editor, dom, onFocus, onBlur, onDestroy, stopEvent } = renderer;
             editor.dataset['type'] = id;

@@ -1,12 +1,12 @@
 name: ci-for-pr
 
 on:
+    workflow_dispatch:
     pull_request:
-        branches: main
+        branches: 'main'
 
 env:
     CI: true
-    PNPM_CACHE_FOLDER: .pnpm-store
     NX_CLOUD_DISTRIBUTED_EXECUTION: true
 jobs:
     test:
@@ -21,22 +21,21 @@ jobs:
               with:
                   node-version: 15.x
 
-            - name: install pnpm
-              run: npm i pnpm@latest -g
             - name: load cache
               uses: actions/cache@v3
               with:
                   path: |
-                      ./.pnpm-store
+                      ~/.pnpm-store
                   key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
                   restore-keys: |
                       ${{ runner.os }}
-            - name: setup pnpm config
-              run: pnpm config set store-dir $PNPM_CACHE_FOLDER
-            - name: install dependencies
-              run: pnpm install
 
-            - run: pnpx nx-cloud start-ci-run
+            - uses: pnpm/action-setup@v2.2.2
+              with:
+                  version: latest
+                  run_install: true
+
+            - run: pnpm exec nx-cloud start-ci-run
 
             - name: build packs
               run: pnpm build:cache
@@ -49,16 +48,16 @@ jobs:
               uses: cypress-io/github-action@v2
               with:
                   install: false
-                  start: pnpm start --filter=@milkdown/e2e
-                  command: pnpm test --filter=@milkdown/e2e
+                  start: pnpm --filter=@milkdown/e2e start
+                  command: pnpm --filter=@milkdown/e2e test
                   wait-on: 'http://localhost:7000'
                   browser: chrome
 
-            - run: pnpx nx-cloud stop-all-agents
+            - run: pnpm exec nx-cloud stop-all-agents
               if: ${{ always() }}
 
             - name: export screenshots (on failure only)
-              uses: actions/upload-artifact@v3.0.0
+              uses: actions/upload-artifact@v3.1.0
               if: ${{ failure() }}
               with:
                   name: cypress-screenshots
@@ -66,7 +65,7 @@ jobs:
                   retention-days: 7
 
             - name: export screen recordings (on failure only)
-              uses: actions/upload-artifact@v3.0.0
+              uses: actions/upload-artifact@v3.1.0
               if: ${{ failure() }}
               with:
                   name: cypress-videos
@@ -85,19 +84,20 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 15.x
-            - name: install pnpm
-              run: npm i pnpm@latest -g
+
             - name: load cache
               uses: actions/cache@v3
               with:
                   path: |
-                      ./.pnpm-store
+                      ~/.pnpm-store
                   key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
                   restore-keys: |
                       ${{ runner.os }}
-            - name: setup pnpm config
-              run: pnpm config set store-dir $PNPM_CACHE_FOLDER
-            - name: install dependencies
-              run: pnpm install
+
+            - uses: pnpm/action-setup@v2.2.2
+              with:
+                  version: latest
+                  run_install: true
+
             - name: Start Nx Agent ${{ matrix.agent }}
               run: npx nx-cloud start-agent

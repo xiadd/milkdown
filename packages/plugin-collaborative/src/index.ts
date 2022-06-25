@@ -1,38 +1,26 @@
 /* Copyright 2021, Milkdown by Mirone. */
-import { keymap } from '@milkdown/prose';
-import { AtomList, createPlugin } from '@milkdown/utils';
-import { redo, undo, yCursorPlugin, ySyncPlugin, yUndoPlugin } from 'y-prosemirror';
-import type { Awareness } from 'y-protocols/awareness';
-import { Doc, XmlFragment } from 'yjs';
+import { createSlice, EditorViewReady, emotionCtx, MilkdownPlugin, themeManagerCtx, ThemeReady } from '@milkdown/core';
 
+import { CollabService } from './collab-service';
 import { injectStyle } from './injectStyle';
 
-type Options = {
-    doc: Doc;
-    awareness: Awareness;
+export const collabServiceCtx = createSlice(new CollabService(), 'collabServiceCtx');
+
+export const collaborative: MilkdownPlugin = (pre) => {
+    const collabService = new CollabService();
+    pre.inject(collabServiceCtx, collabService);
+    return async (ctx) => {
+        await ctx.wait(ThemeReady);
+        const themeManager = ctx.get(themeManagerCtx);
+        const emotion = ctx.get(emotionCtx);
+        themeManager.onFlush(() => {
+            injectStyle(themeManager, emotion);
+        });
+
+        await ctx.wait(EditorViewReady);
+        collabService.bindCtx(ctx);
+    };
 };
 
-export const y = createPlugin<string, Options>((utils, { doc, awareness } = {}) => {
-    if (!doc || !awareness) {
-        throw new Error('Must provide doc and awareness for collaborative plugin');
-    }
-    const type = doc.get('prosemirror', XmlFragment) as Parameters<typeof ySyncPlugin>[0];
-    utils.getStyle(injectStyle);
-
-    const plugin = [
-        ySyncPlugin(type),
-        yCursorPlugin(awareness),
-        yUndoPlugin(),
-        keymap({
-            'Mod-z': undo,
-            'Mod-y': redo,
-            'Mod-Shift-z': redo,
-        }),
-    ];
-
-    return {
-        prosePlugins: () => plugin,
-    };
-});
-
-export const collaborative = AtomList.create([y()]);
+export { CollabService } from './collab-service';
+export * from 'y-prosemirror';

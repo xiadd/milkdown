@@ -8,8 +8,10 @@
     position: fixed;
     z-index: 2;
     background: palette(background);
-    &.fold {
-        width: calc(100vw - 16rem);
+    @mixin query 72rem {
+        &.fold {
+            width: calc(100% - 16rem);
+        }
     }
 }
 
@@ -140,7 +142,7 @@
     border: 0;
     margin: 0;
     background-color: transparent;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.4s ease-in-out;
     cursor: pointer;
     &:hover {
         background: palette(primary, 0.12);

@@ -1,12 +1,13 @@
 /* Copyright 2021, Milkdown by Mirone. */
-import type { EditorState, EditorView } from '@milkdown/prose';
+import { EditorState } from '@milkdown/prose/state';
+import type { EditorView } from '@milkdown/prose/view';
 import { Utils } from '@milkdown/utils';
 
 import { createButtonManager } from './button-manager';
 import type { ButtonMap } from './item';
 
 export const createPlugin = (buttonMap: ButtonMap, utils: Utils, bottom: boolean, containerClassName: string) => {
-    const buttonManager = createButtonManager(buttonMap, utils, bottom, containerClassName);
+    let buttonManager = createButtonManager(buttonMap, utils, bottom, containerClassName);
     let shouldHide = false;
 
     const hide = () => {
@@ -28,6 +29,11 @@ export const createPlugin = (buttonMap: ButtonMap, utils: Utils, bottom: boolean
     };
 
     return {
+        recreate: (editorView: EditorView) => {
+            buttonManager = createButtonManager(buttonMap, utils, bottom, containerClassName);
+            buttonManager.render(editorView);
+            update(editorView);
+        },
         update,
         destroy: () => {
             buttonManager.destroy();

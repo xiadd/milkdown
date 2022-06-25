@@ -1,9 +1,12 @@
 {
     "cSpell.words": [
         "benrbray",
+        "carbonads",
         "changesets",
+        "Collab",
         "commitlint",
         "commonmark",
+        "docsearch",
         "dropcursor",
         "gapcursor",
         "hardbreak",
@@ -36,5 +39,11 @@
     "npm.packageManager": "pnpm",
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/*.code-search": true,
+        "**/lib": true
     }
 }
