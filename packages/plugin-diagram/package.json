@@ -1,6 +1,6 @@
 {
     "name": "@milkdown/plugin-diagram",
-    "version": "6.2.0",
+    "version": "6.3.1",
     "type": "module",
     "main": "./lib/index.es.js",
     "types": "./lib/index.d.ts",
@@ -33,11 +33,12 @@
         "@milkdown/prose": "^6.0.1"
     },
     "dependencies": {
+        "@milkdown/exception": "workspace:*",
         "@milkdown/utils": "workspace:*",
         "@types/mermaid": "^8.2.8",
         "mermaid": "^9.0.0",
         "nanoid": "^4.0.0",
-        "tslib": "^2.3.1",
+        "tslib": "^2.4.0",
         "unist-util-visit": "^4.0.0"
     },
     "nx": {

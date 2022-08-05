@@ -1,6 +1,6 @@
 {
     "name": "@milkdown/exception",
-    "version": "6.2.0",
+    "version": "6.3.1",
     "type": "module",
     "main": "./lib/index.es.js",
     "types": "./lib/index.d.ts",
@@ -17,7 +17,7 @@
         "src"
     ],
     "dependencies": {
-        "tslib": "^2.3.1"
+        "tslib": "^2.4.0"
     },
     "nx": {
         "targets": {

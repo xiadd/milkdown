@@ -1,10 +1,10 @@
 /* Copyright 2021, Milkdown by Mirone. */
-import { commandsCtx, Ctx, ThemeIcon, themeManagerCtx } from '@milkdown/core';
+import { commandsCtx, Ctx, schemaCtx, ThemeIcon, themeManagerCtx } from '@milkdown/core';
 import type { Icon } from '@milkdown/design-system';
-import { Schema } from '@milkdown/prose/model';
+import type { MarkType } from '@milkdown/prose/model';
 import { EditorView } from '@milkdown/prose/view';
 
-import { createToggleIcon } from './utility';
+import { hasMark, isTextAndNotHasMark } from './utility';
 
 export type Pred = (view: EditorView) => boolean;
 export type Updater = (view: EditorView, $: HTMLElement) => void;
@@ -14,12 +14,10 @@ export type OnClick = (ctx: Ctx) => void;
 
 export type Item = {
     icon: Icon | ((ctx: Ctx) => HTMLElement);
-
     onClick: string | ((ctx: Ctx) => () => void);
-
     isHidden: (ctx: Ctx) => Pred;
-
     isActive: (ctx: Ctx) => Pred;
+    canAddToDOM: (ctx: Ctx) => Pred;
 };
 
 export type ButtonItem = {
@@ -30,55 +28,44 @@ export type ButtonItem = {
     enable: Pred;
 };
 
-const Buttonize = ({ icon, onClick, isHidden, isActive }: Item, ctx: Ctx): ButtonItem => ({
-    $: typeof icon === 'function' ? icon(ctx) : (ctx.get(themeManagerCtx).get(ThemeIcon, icon)?.dom as HTMLElement),
-    command: typeof onClick === 'string' ? () => ctx.get(commandsCtx).call(onClick) : onClick(ctx),
-    disable: isHidden(ctx),
-    active: isActive(ctx),
-    enable: (view: EditorView) => !isHidden(ctx)(view),
+export const createToggleIcon = (
+    icon: Icon,
+    onClick: string,
+    mark: MarkType | undefined,
+    disableForMark: MarkType | undefined,
+): Item => ({
+    icon,
+    onClick,
+    isHidden: () => (view: EditorView) => isTextAndNotHasMark(view.state, disableForMark),
+    isActive: () => (view: EditorView) => hasMark(view.state, mark),
+    canAddToDOM: () => (view: EditorView) => !!mark && !!view.state.schema.marks[mark.name],
 });
 
-export enum ButtonAction {
-    ToggleBold,
-    ToggleItalic,
-    ToggleStrike,
-    ToggleCode,
-    ToggleLink,
-}
+export const defaultButtons = (ctx: Ctx) => {
+    const marks = ctx.get(schemaCtx).marks;
+    return [
+        createToggleIcon('bold', 'ToggleBold', marks['strong'], marks['code_inline']),
+        createToggleIcon('italic', 'ToggleItalic', marks['em'], marks['code_inline']),
+        createToggleIcon('strikeThrough', 'ToggleStrikeThrough', marks['strike_through'], marks['code_inline']),
+        createToggleIcon('code', 'ToggleInlineCode', marks['code_inline'], marks['link']),
+        createToggleIcon('link', 'ToggleLink', marks['link'], marks['code_inline']),
+    ];
+};
 
-export type ButtonMap = Record<ButtonAction, ButtonItem>;
+export type ButtonList = ButtonItem[];
 
 export type TooltipOptions = {
     bottom: boolean;
-    items: Array<Item> | undefined;
+    items: (ctx: Ctx) => Array<Item>;
 };
 
-export const buttonMap = (schema: Schema, ctx: Ctx, items: Array<Item> | undefined): ButtonMap => {
-    const { marks } = schema;
-    const ButtonItems = Array<ButtonItem>();
-    if (typeof items !== 'undefined') {
-        (items as Array<Item>).forEach((item) => {
-            ButtonItems.push(Buttonize(item, ctx));
-        });
-    }
-    return {
-        [ButtonAction.ToggleBold]: createToggleIcon(ctx, 'bold', 'ToggleBold', marks['strong'], marks['code_inline']),
-        [ButtonAction.ToggleItalic]: createToggleIcon(ctx, 'italic', 'ToggleItalic', marks['em'], marks['code_inline']),
-        [ButtonAction.ToggleStrike]: createToggleIcon(
-            ctx,
-            'strikeThrough',
-            'ToggleStrikeThrough',
-            marks['strike_through'],
-            marks['code_inline'],
-        ),
-        [ButtonAction.ToggleCode]: createToggleIcon(
-            ctx,
-            'code',
-            'ToggleInlineCode',
-            marks['code_inline'],
-            marks['link'],
-        ),
-        [ButtonAction.ToggleLink]: createToggleIcon(ctx, 'link', 'ToggleLink', marks['link'], marks['code_inline']),
-        ...ButtonItems,
-    };
+export const buttonMap = (ctx: Ctx, items: (ctx: Ctx) => Array<Item> = defaultButtons): ButtonList => {
+    const toButton = ({ icon, onClick, isHidden, isActive, canAddToDOM }: Item): ButtonItem => ({
+        $: typeof icon === 'function' ? icon(ctx) : (ctx.get(themeManagerCtx).get(ThemeIcon, icon)?.dom as HTMLElement),
+        command: typeof onClick === 'string' ? () => ctx.get(commandsCtx).call(onClick) : onClick(ctx),
+        disable: isHidden(ctx),
+        active: isActive(ctx),
+        enable: canAddToDOM(ctx),
+    });
+    return items(ctx).map(toButton);
 };

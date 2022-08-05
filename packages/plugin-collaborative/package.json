@@ -1,6 +1,6 @@
 {
     "name": "@milkdown/plugin-collaborative",
-    "version": "6.2.0",
+    "version": "6.3.1",
     "type": "module",
     "main": "./lib/index.es.js",
     "types": "./lib/index.d.ts",
@@ -35,7 +35,8 @@
     },
     "dependencies": {
         "@milkdown/utils": "workspace:*",
-        "tslib": "^2.3.1",
+        "@milkdown/exception": "workspace:*",
+        "tslib": "^2.4.0",
         "y-prosemirror": "^1.1.2",
         "y-protocols": "^1.0.5"
     },

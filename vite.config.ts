@@ -6,7 +6,7 @@
  * Please don't use this file for other purpose.
  */
 
-import path from 'path';
+import { resolve } from 'pathe';
 import type { Plugin } from 'rollup';
 import autoExternal from 'rollup-plugin-auto-external';
 import type { BuildOptions, UserConfig as ViteUserConfig, UserConfigExport } from 'vite';
@@ -16,7 +16,7 @@ export const libFileName = (format: string) => `index.${format}.js`;
 
 export const rollupPlugins: Plugin[] = [autoExternal()];
 
-const resolvePath = (str: string) => path.resolve(__dirname, str);
+const resolvePath = (str: string) => resolve(__dirname, str);
 
 function isObject(item: unknown): item is Record<string, unknown> {
     return Boolean(item && typeof item === 'object' && !Array.isArray(item));
@@ -41,6 +41,7 @@ function mergeDeep<T>(target: T, ...sources: T[]): T {
 }
 
 export const external = [
+    // common
     'tslib',
     '@emotion/css',
     '@emotion/cache',
@@ -49,12 +50,14 @@ export const external = [
     'vue',
     'react',
     'react-dom',
+    // core
     '@milkdown/core',
     '@milkdown/ctx',
     '@milkdown/design-system',
     '@milkdown/exception',
     '@milkdown/transformer',
     '@milkdown/utils',
+    // prose
     '@milkdown/prose',
     '@milkdown/prose/commands',
     '@milkdown/prose/dropcursor',
@@ -68,8 +71,11 @@ export const external = [
     '@milkdown/prose/tables',
     '@milkdown/prose/transform',
     '@milkdown/prose/view',
+    // preset
     '@milkdown/preset-gfm',
     '@milkdown/preset-commonmark',
+    // plugin
+    '@milkdown/plugin-block',
     '@milkdown/plugin-clipboard',
     '@milkdown/plugin-collaborative',
     '@milkdown/plugin-cursor',

@@ -8,6 +8,7 @@ import {
     ThemeShadow,
     ThemeSize,
 } from '@milkdown/core';
+import { missingRootElement } from '@milkdown/exception';
 import { calculateTextPosition } from '@milkdown/prose';
 import { EditorView } from '@milkdown/prose/view';
 
@@ -23,13 +24,13 @@ const getStyle = (manager: ThemeManager, { css }: Emotion, options: { width: str
         position: absolute;
         background: ${palette('surface')};
         border-radius: ${manager.get(ThemeSize, 'radius')};
-        font-size: 1em;
+        font-size: 16px;
 
-        height: 3.5em;
+        height: 56px;
         box-sizing: border-box;
         width: ${options.width};
-        padding: 0 1em;
-        gap: 1em;
+        padding: 0 16px;
+        gap: 16px;
         z-index: 2;
 
         input,
@@ -47,10 +48,10 @@ const getStyle = (manager: ThemeManager, { css }: Emotion, options: { width: str
 
         button {
             cursor: pointer;
-            height: 2.25em;
+            height: 36px;
             color: ${palette('primary')};
-            font-size: 0.875em;
-            padding: 0 0.5em;
+            font-size: 14px;
+            padding: 0 8px;
             font-weight: 500;
             letter-spacing: 1.25px;
             &:hover {
@@ -78,7 +79,7 @@ const calcInputPos = (view: EditorView, input: HTMLDivElement) => {
     calculateTextPosition(view, input, (start, end, target, parent) => {
         const $editor = view.dom.parentElement;
         if (!$editor) {
-            throw new Error();
+            throw missingRootElement();
         }
 
         const selectionWidth = end.left - start.left;
@@ -94,7 +95,7 @@ const calcInputPos = (view: EditorView, input: HTMLDivElement) => {
 export const inputChip = (manager: ThemeManager, emotion: Emotion) => {
     manager.set<ThemeInputChipType>(
         'input-chip',
-        ({ isBindMode, onUpdate, buttonText, placeholder, width = '25em', calculatePosition = calcInputPos }) => {
+        ({ isBindMode, onUpdate, buttonText, placeholder, width = '400px', calculatePosition = calcInputPos }) => {
             let button: HTMLButtonElement | null = null;
             let disabled = false;
             let value = '';
@@ -175,7 +176,7 @@ export const inputChip = (manager: ThemeManager, emotion: Emotion) => {
 
             const init = (editorView: EditorView) => {
                 const $editor = editorView.dom.parentElement;
-                if (!$editor) throw new Error();
+                if (!$editor) throw missingRootElement();
 
                 input.addEventListener('input', onInput);
                 input.addEventListener('keydown', onKeydown);

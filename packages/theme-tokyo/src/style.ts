@@ -32,16 +32,16 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
     `;
 
     const editorLayout = css`
-        padding: 3.125em 1.25em;
+        padding: 50px 20px;
         outline: none;
         & > * {
-            margin: 1.875em 0;
+            margin: 30px 0;
         }
     `;
 
     const paragraph = css`
         p {
-            font-size: 1em;
+            font-size: 16px;
             line-height: 1.5;
             letter-spacing: 0.5px;
         }
@@ -49,41 +49,41 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
 
     const blockquote = css`
         blockquote {
-            padding-left: 1.875em;
-            line-height: 1.75em;
+            padding-left: 30px;
+            line-height: 28px;
             border-left: 4px solid ${palette('primary')};
             margin-left: 0;
             margin-right: 0;
             * {
-                font-size: 1em;
-                line-height: 1.5em;
+                font-size: 16px;
+                line-height: 24px;
             }
         }
     `;
 
     const heading = css`
         h1 {
-            font-size: 3em;
+            font-size: 48px;
             line-height: 1.167;
         }
         h2 {
-            font-size: 2.5em;
+            font-size: 40px;
             line-height: 1.2;
         }
         h3 {
-            font-size: 2.125em;
+            font-size: 34px;
             line-height: 1.05;
         }
         h4 {
-            font-size: 1.75em;
+            font-size: 28px;
             line-height: 1.14;
         }
         h5 {
-            font-size: 1.5em;
+            font-size: 24px;
             line-height: 1;
         }
         h6 {
-            font-size: 1.25em;
+            font-size: 20px;
             line-height: 1;
         }
         .heading {
@@ -101,14 +101,49 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
     `;
 
     const list = css`
+        ul,
+        ol {
+            padding: 0;
+        }
+
         .list-item,
-        .list-item > * {
-            margin: 0.5em 0;
+        .task-list-item {
+            margin: 8px 0;
+        }
+
+        .list-item_label,
+        .list-item .paragraph {
+            margin: 0;
+        }
+
+        .list-item {
+            display: flex;
+
+            &_body {
+                flex: 1;
+            }
+        }
+
+        .list-item_label {
+            display: flex;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            font-size: 16px;
+            line-height: 1.5;
+            color: ${palette('primary')};
+        }
+
+        .list-item[data-list-type='bullet'] {
+            & > .list-item_label {
+                font-size: 24px;
+                line-height: 1;
+            }
         }
 
         li {
             &::marker {
-                color: ${palette('primary')};
+                display: none;
             }
         }
 
@@ -117,8 +152,11 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
             flex-direction: row;
             align-items: flex-start;
             &_checkbox {
-                margin: 0.5em 0.5em 0.5em 0;
-                height: 1em;
+                margin: 8px 8px 8px 0;
+                height: 16px;
+            }
+            & .paragraph {
+                margin: 0;
             }
         }
     `;
@@ -127,14 +165,14 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
         .code-fence {
             pre {
                 font-family: ${manager.get(ThemeFont, 'code')};
-                margin: 0 1.2em !important;
+                margin: 0 18px;
                 white-space: pre;
                 overflow: auto;
                 ${manager.get(ThemeScrollbar, ['x'])}
 
                 background-color: ${palette('background')};
                 color: ${palette('neutral')};
-                font-size: 0.875em;
+                font-size: 14px;
                 border-radius: ${radius};
 
                 code {
@@ -159,13 +197,12 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
 
     const inline = css`
         .code-inline {
-            background-color: ${palette('background')};
-            color: ${palette('secondary')};
+            background-color: ${palette('neutral')};
+            color: ${palette('background')};
             border-radius: ${radius};
             font-weight: 500;
             font-family: ${code};
-            padding: 0 0.2em;
-            font-size: 1.2em;
+            padding: 0 3px;
         }
 
         .strong {
@@ -179,8 +216,8 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
             transition: all 0.4s ease-in-out;
             font-weight: 500;
             &:hover {
-                background-color: ${palette('shadow', 0.5)};
-                box-shadow: 0 0.2em ${palette('shadow', 0.5)}, 0 -0.2em ${palette('shadow', 0.5)};
+                background-color: ${palette('line')};
+                box-shadow: 0 3px ${palette('line')}, 0 -3px ${palette('line')};
             }
         }
 
@@ -192,14 +229,16 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
     const footnote = css`
         .footnote-definition {
             ${manager.get(ThemeBorder, undefined)};
-            padding: 1em;
+            border-radius: ${manager.get(ThemeSize, 'radius')};
+            background-color: ${palette('background')};
+            padding: 16px;
             display: flex;
             flex-direction: row;
             & > .footnote-definition_content {
                 flex: 1;
-                width: calc(100% - 1em);
+                width: calc(100% - 16px);
                 & > dd {
-                    margin-inline-start: 1em;
+                    margin-inline-start: 16px;
                 }
                 & > dt {
                     color: ${palette('secondary')};
@@ -207,7 +246,7 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
                 }
             }
             & > .footnote-definition_anchor {
-                width: 1em;
+                width: 16px;
             }
         }
     `;
@@ -222,7 +261,7 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
             * {
                 margin: 0;
                 box-sizing: border-box;
-                font-size: 1em;
+                font-size: 16px;
             }
         }
         table {
@@ -231,16 +270,13 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
             width: 100%;
             overflow: auto;
             border-radius: ${manager.get(ThemeSize, 'radius')};
-            p {
-                line-height: unset;
-            }
         }
         tr {
             ${manager.get(ThemeBorder, 'bottom')};
         }
         td,
         th {
-            padding: 0 1em;
+            padding: 0 16px;
             vertical-align: top;
             box-sizing: border-box;
             position: relative;
@@ -249,7 +285,8 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
             ${manager.get(ThemeBorder, undefined)};
             text-align: left;
             line-height: 3;
-            height: 3em;
+            height: 48px;
+            vertical-align: middle;
         }
         th {
             background: ${palette('background', 0.5)};
@@ -264,10 +301,6 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
             pointer-events: none;
             background: ${palette('secondary')};
             width: ${manager.get(ThemeSize, 'lineWidth')};
-        }
-        .resize-cursor {
-            cursor: ew-resize;
-            cursor: col-resize;
         }
 
         .selectedCell {
@@ -294,7 +327,7 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
     injectGlobal`
         .milkdown {
             .material-icons-outlined {
-                font-size: 1.5em;
+                font-size: 24px;
             }
 
             position: relative;
@@ -311,16 +344,21 @@ export const getStyle = (manager: ThemeManager, emotion: Emotion) => {
             ${manager.get(ThemeScrollbar, undefined)}
             ${selection};
 
+            .resize-cursor {
+                cursor: ew-resize;
+                cursor: col-resize;
+            }
+
             .editor {
                 ${editorLayout};
 
                 ${paragraph};
-                ${heading};
                 ${blockquote};
                 ${hr};
                 ${list};
                 ${code};
                 ${img};
+                ${heading};
 
                 ${table};
                 ${footnote};

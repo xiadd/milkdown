@@ -1,7 +1,7 @@
 {
     "name": "@milkdown-examples/vue",
     "private": true,
-    "version": "6.2.0",
+    "version": "6.3.1",
     "license": "MIT",
     "scripts": {
         "start": "vite"
@@ -11,6 +11,7 @@
         "@milkdown/plugin-emoji": "workspace:*",
         "@milkdown/plugin-listener": "workspace:*",
         "@milkdown/plugin-prism": "workspace:*",
+        "@milkdown/plugin-menu": "workspace:*",
         "@milkdown/plugin-slash": "workspace:*",
         "@milkdown/preset-commonmark": "workspace:*",
         "@milkdown/prose": "workspace:*",

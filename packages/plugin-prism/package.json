@@ -1,6 +1,6 @@
 {
     "name": "@milkdown/plugin-prism",
-    "version": "6.2.0",
+    "version": "6.3.1",
     "type": "module",
     "main": "./lib/index.es.js",
     "types": "./lib/index.d.ts",
@@ -32,7 +32,7 @@
         "@types/refractor": "^3.0.0",
         "@milkdown/utils": "workspace:*",
         "refractor": "^4.0.0",
-        "tslib": "^2.3.1"
+        "tslib": "^2.4.0"
     },
     "nx": {
         "targets": {

@@ -1,6 +1,6 @@
 {
     "name": "@milkdown/preset-gfm",
-    "version": "6.2.0",
+    "version": "6.3.1",
     "type": "module",
     "main": "./lib/index.es.js",
     "types": "./lib/index.d.ts",
@@ -35,8 +35,9 @@
     },
     "dependencies": {
         "@milkdown/utils": "workspace:*",
+        "@milkdown/exception": "workspace:*",
         "remark-gfm": "^3.0.0",
-        "tslib": "^2.3.1"
+        "tslib": "^2.4.0"
     },
     "nx": {
         "targets": {

@@ -7,7 +7,7 @@ import { AtomList, createPlugin } from '@milkdown/utils';
 
 import { Config, defaultConfig, SelectParent } from './default-config';
 import { Manager } from './manager';
-import { HandleDOM, menubar } from './menubar';
+import { HandleDOM, initWrapper, menubar } from './menubar';
 
 export const menuKey = new PluginKey('MILKDOWN_MENU');
 
@@ -15,30 +15,42 @@ export * from './default-config';
 export type { HandleDOM, HandleDOMParams } from './menubar';
 
 export type Options = {
-    config: Config;
+    config: Config | ((ctx: Ctx) => Config);
     domHandler: HandleDOM;
 };
 
 export const menuPlugin = createPlugin<string, Options>((utils, options) => {
-    const config = options?.config ?? defaultConfig;
     const domHandler = options?.domHandler;
 
     let restoreDOM: (() => void) | null = null;
     let menu: HTMLDivElement | null = null;
+    let menuWrapper: HTMLDivElement | null = null;
     let manager: Manager | null = null;
 
     const initIfNecessary = (ctx: Ctx, editorView: EditorView) => {
+        const config: Config = options?.config
+            ? typeof options.config === 'function'
+                ? options.config(ctx)
+                : options.config
+            : defaultConfig;
+
         if (!editorView.editable) {
             return;
         }
 
+        if (!menuWrapper) {
+            menuWrapper = initWrapper(ctx, editorView);
+        }
+
         if (!menu) {
-            const [_menu, _restoreDOM] = menubar(utils, editorView, ctx, domHandler);
+            const [_menu, _restoreDOM] = menubar(utils, editorView, ctx, menuWrapper, domHandler);
             menu = _menu;
             restoreDOM = () => {
                 _restoreDOM();
+                menuWrapper = null;
                 menu = null;
                 manager = null;
+                restoreDOM = null;
             };
         }
 

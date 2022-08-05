@@ -1,6 +1,6 @@
 {
     "name": "@milkdown/plugin-slash",
-    "version": "6.2.0",
+    "version": "6.3.1",
     "type": "module",
     "main": "./lib/index.es.js",
     "types": "./lib/index.d.ts",
@@ -31,8 +31,9 @@
     },
     "dependencies": {
         "@milkdown/utils": "workspace:*",
+        "@milkdown/exception": "workspace:*",
         "smooth-scroll-into-view-if-needed": "^1.1.32",
-        "tslib": "^2.3.1"
+        "tslib": "^2.4.0"
     },
     "nx": {
         "targets": {

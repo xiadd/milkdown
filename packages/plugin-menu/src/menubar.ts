@@ -1,5 +1,6 @@
 /* Copyright 2021, Milkdown by Mirone. */
 import { Ctx, rootCtx, ThemeBorder, ThemeColor, ThemeFont, ThemeScrollbar } from '@milkdown/core';
+import { missingMenuWrapper, missingRootElement } from '@milkdown/exception';
 import { EditorView } from '@milkdown/prose/view';
 import { Utils } from '@milkdown/utils';
 
@@ -13,16 +14,14 @@ export type HandleDOMParams = {
 
 export type HandleDOM = (params: HandleDOMParams) => void;
 
-const restore: HandleDOM = ({ milkdownDOM, editorRoot, menu, menuWrapper }) => {
+const restore: HandleDOM = ({ menu, menuWrapper, milkdownDOM, editorRoot }) => {
     editorRoot.appendChild(milkdownDOM);
     menuWrapper.remove();
     menu.remove();
 };
 
-const defaultDOMHandler: HandleDOM = ({ menu, menuWrapper, editorRoot, milkdownDOM }) => {
-    menuWrapper.appendChild(menu);
-    editorRoot.replaceChild(menuWrapper, milkdownDOM);
-    menuWrapper.appendChild(milkdownDOM);
+const defaultDOMHandler: HandleDOM = ({ menu, menuWrapper, milkdownDOM }) => {
+    menuWrapper.insertBefore(menu, milkdownDOM);
 };
 
 const getRoot = (root: string | Node | null | undefined) => {
@@ -38,9 +37,37 @@ const getRoot = (root: string | Node | null | undefined) => {
     return root;
 };
 
-export const menubar = (utils: Utils, view: EditorView, ctx: Ctx, domHandler: HandleDOM = defaultDOMHandler) => {
-    const menuWrapper = document.createElement('div');
-    menuWrapper.classList.add('milkdown-menu-wrapper');
+export const initWrapper = (ctx: Ctx, view: EditorView) => {
+    let _menuWrapper: HTMLDivElement | null = null;
+    _menuWrapper = document.createElement('div');
+    _menuWrapper.classList.add('milkdown-menu-wrapper');
+
+    const root = ctx.get(rootCtx);
+
+    const editorDOM = view.dom;
+    const editorRoot = getRoot(root) as HTMLElement;
+    const milkdownDOM = editorDOM.parentElement;
+
+    if (!milkdownDOM) {
+        throw missingRootElement();
+    }
+
+    editorRoot.replaceChild(_menuWrapper, milkdownDOM);
+    _menuWrapper.appendChild(milkdownDOM);
+    return _menuWrapper;
+};
+
+export const menubar = (
+    utils: Utils,
+    view: EditorView,
+    ctx: Ctx,
+    menuWrapper: HTMLDivElement | null,
+    domHandler: HandleDOM = defaultDOMHandler,
+) => {
+    if (!menuWrapper) {
+        throw missingMenuWrapper();
+    }
+
     const menu = document.createElement('div');
     menu.classList.add('milkdown-menu');
 
@@ -89,7 +116,7 @@ export const menubar = (utils: Utils, view: EditorView, ctx: Ctx, domHandler: Ha
     const milkdownDOM = editorDOM.parentElement;
 
     if (!milkdownDOM) {
-        throw new Error('No parent node found');
+        throw missingRootElement();
     }
 
     domHandler({

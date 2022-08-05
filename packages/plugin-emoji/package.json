@@ -1,6 +1,6 @@
 {
     "name": "@milkdown/plugin-emoji",
-    "version": "6.2.0",
+    "version": "6.3.1",
     "type": "module",
     "main": "./lib/index.es.js",
     "types": "./lib/index.d.ts",
@@ -30,12 +30,13 @@
         "@milkdown/prose": "^6.0.1"
     },
     "dependencies": {
+        "@milkdown/exception": "workspace:*",
         "@milkdown/utils": "workspace:*",
         "@types/node-emoji": "^1.8.1",
         "emoji-regex": "^10.0.0",
         "node-emoji": "^1.10.0",
         "remark-emoji": "^3.0.1",
-        "tslib": "^2.3.1",
+        "tslib": "^2.4.0",
         "twemoji": "^14.0.1",
         "unist-util-visit": "^4.0.0"
     },
